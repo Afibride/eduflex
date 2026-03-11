@@ -458,4 +458,159 @@ const SchoolLoginFormPage = () => {
                         </div>
                         {activateErrors.newPassword && (
                           <p className="text-sm text-red-600 flex items-center gap-1 mt-1">
-                            <span className="w-1 h-1 bg-red-600 rounded-full"></sp
+                            <span className="w-1 h-1 bg-red-600 rounded-full"></span>
+                            {activateErrors.newPassword.message}
+                          </p>
+                        )}
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="confirmPassword" className="text-sm font-medium text-gray-700">
+                          Confirm Password
+                        </Label>
+                        <div className="relative">
+                          <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+                          <Input
+                            id="confirmPassword"
+                            type={showConfirmPassword ? "text" : "password"}
+                            placeholder="Confirm your new password"
+                            className="pl-10 pr-10 h-12 bg-gray-50 border-gray-200 focus:border-purple-500 focus:ring-purple-500 text-gray-900"
+                            {...registerActivate('confirmPassword')}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                          >
+                            {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                          </button>
+                        </div>
+                        {activateErrors.confirmPassword && (
+                          <p className="text-sm text-red-600 flex items-center gap-1 mt-1">
+                            <span className="w-1 h-1 bg-red-600 rounded-full"></span>
+                            {activateErrors.confirmPassword.message}
+                          </p>
+                        )}
+                      </div>
+
+                      <Button
+                        type="submit"
+                        className="w-full h-12 text-white font-semibold text-base hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 relative overflow-hidden group"
+                        style={{
+                          background: `linear-gradient(135deg, ${colors.accent.main}, ${colors.primary.main})`
+                        }}
+                        disabled={isActivateSubmitting}
+                      >
+                        <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
+                        <span className="relative flex items-center justify-center gap-2">
+                          {isActivateSubmitting ? (
+                            <>
+                              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                              Activating...
+                            </>
+                          ) : (
+                            <>
+                              Activate Account
+                              <ArrowRight size={18} />
+                            </>
+                          )}
+                        </span>
+                      </Button>
+
+                      <div className="mt-6 text-center text-sm">
+                        <p className="text-gray-500">
+                          Already activated?{' '}
+                          <button 
+                            type="button"
+                            onClick={() => setSearchParams({ action: 'login' })} 
+                            className="text-blue-600 hover:text-blue-700 font-semibold hover:underline"
+                          >
+                            Login here
+                          </button>
+                        </p>
+                      </div>
+                    </form>
+                  )}
+
+                  {/* Demo Credentials Section */}
+                  <div className="mt-8">
+                    <div className="relative">
+                      <div className="absolute inset-0 flex items-center">
+                        <div className="w-full border-t border-gray-200"></div>
+                      </div>
+                      <div className="relative flex justify-center text-xs">
+                        <span className="px-2 bg-white text-gray-500">Demo Access</span>
+                      </div>
+                    </div>
+
+                    {isLogin ? (
+                      <>
+                        <div className="mt-4 grid grid-cols-2 gap-2">
+                          {['admin', 'teacher', 'student', 'parent'].map((role) => (
+                            <button
+                              key={role}
+                              type="button"
+                              onClick={() => fillDemoCredentials(role)}
+                              className={`px-3 py-2 text-xs font-medium rounded-lg capitalize transition-all duration-200 ${
+                                selectedRole === role
+                                  ? 'bg-blue-600 text-white shadow-md'
+                                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                              }`}
+                            >
+                              {role}
+                            </button>
+                          ))}
+                        </div>
+
+                        <div className="mt-3 p-3 bg-blue-50 rounded-lg border border-blue-100">
+                          <p className="text-xs text-blue-800 font-medium mb-1">Quick Demo:</p>
+                          <p className="text-xs text-blue-700">Click any role above to auto-fill credentials</p>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="mt-4">
+                        <button
+                          type="button"
+                          onClick={fillActivationDemo}
+                          className="w-full px-3 py-2 text-xs font-medium rounded-lg bg-purple-100 text-purple-700 hover:bg-purple-200 transition-all duration-200"
+                        >
+                          Fill Demo Activation Data
+                        </button>
+                        <div className="mt-3 p-3 bg-purple-50 rounded-lg border border-purple-100">
+                          <p className="text-xs text-purple-800 font-medium mb-1">Test Account:</p>
+                          <p className="text-xs text-purple-700">ID: {schoolId}-STUDENT-002</p>
+                          <p className="text-xs text-purple-700">Email: new@leclerc.edu.cm</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Trust Badge */}
+              <div className="mt-4 text-center">
+                <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-sm rounded-full shadow-sm">
+                  <Shield size={14} className="text-green-600" />
+                  <span className="text-xs text-gray-600">Secured by EduFlex • AES-256 Encryption</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Animation styles */}
+      <style>{`
+        @keyframes float {
+          0%, 100% { transform: translateY(0px) translateX(0px); }
+          50% { transform: translateY(-20px) translateX(10px); }
+        }
+        .animate-float {
+          animation: float 8s ease-in-out infinite;
+        }
+      `}</style>
+    </>
+  );
+};
+
+export default SchoolLoginFormPage;
