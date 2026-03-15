@@ -81,8 +81,30 @@ function extractRoutes(appJsxPath) {
 	}
 }
 
+// FIXED: Recursively find all React files in directory
 function findReactFiles(dir) {
-	return fs.readdirSync(dir).map(item => path.join(dir, item));
+	let results = [];
+	
+	try {
+		const entries = fs.readdirSync(dir, { withFileTypes: true });
+		
+		for (const entry of entries) {
+			const fullPath = path.join(dir, entry.name);
+			
+			if (entry.isDirectory()) {
+				// Recursively process subdirectories
+				const subResults = findReactFiles(fullPath);
+				results = results.concat(subResults);
+			} else if (entry.isFile() && (entry.name.endsWith('.jsx') || entry.name.endsWith('.tsx'))) {
+				// Only add React files
+				results.push(fullPath);
+			}
+		}
+	} catch (error) {
+		console.error(`❌ Error reading directory ${dir}:`, error.message);
+	}
+	
+	return results;
 }
 
 function extractHelmetData(content, filePath, routes) {
@@ -103,20 +125,35 @@ function extractHelmetData(content, filePath, routes) {
 	const description = cleanText(descMatch?.[1]);
 
 	const fileName = path.basename(filePath, path.extname(filePath));
-	const url = routes.length && routes.has(fileName)
-		? routes.get(fileName)
-		: generateFallbackUrl(fileName);
+	
+	// Handle nested routes better
+	let url;
+	if (routes && routes.size > 0 && routes.has(fileName)) {
+		url = routes.get(fileName);
+	} else {
+		// Generate URL based on file path relative to pages directory
+		const pagesDir = path.join(process.cwd(), 'src', 'pages');
+		const relativePath = path.relative(pagesDir, filePath);
+		const pathParts = relativePath.split(path.sep);
+		
+		// Remove file extension and handle index files
+		const lastPart = pathParts[pathParts.length - 1].replace(/\.(jsx|tsx)$/, '');
+		if (lastPart === 'index') {
+			pathParts.pop();
+		} else {
+			pathParts[pathParts.length - 1] = lastPart;
+		}
+		
+		// Convert to URL path
+		url = '/' + pathParts.join('/').toLowerCase();
+		if (url === '/') url = '/';
+	}
 
 	return {
 		url,
 		title: title || 'Untitled Page',
 		description: description || 'No description available'
 	};
-}
-
-function generateFallbackUrl(fileName) {
-	const cleanName = fileName.replace(/Page$/, '').toLowerCase();
-	return cleanName === 'app' ? '/' : `/${cleanName}`;
 }
 
 function generateLlmsTxt(pages) {
@@ -151,11 +188,15 @@ function main() {
 	let pages = [];
 
 	if (!fs.existsSync(pagesDir)) {
-		pages.push(processPageFile(appJsxPath, []))
-		pages = pages.filter(Boolean);
+		if (fs.existsSync(appJsxPath)) {
+			const pageData = processPageFile(appJsxPath, new Map());
+			if (pageData) pages.push(pageData);
+		}
 	} else {
 		const routes = extractRoutes(appJsxPath);
 		const reactFiles = findReactFiles(pagesDir);
+		
+		console.log(`📁 Found ${reactFiles.length} React files in pages directory`);
 
 		pages = reactFiles
 			.map(filePath => processPageFile(filePath, routes))
@@ -163,18 +204,19 @@ function main() {
 	}
 
 	if (pages.length === 0) {
-		console.error('❌ No pages with Helmet components found!');
-		process.exit(1);
+		console.log('⚠️ No pages with Helmet components found - skipping llms.txt generation');
+		process.exit(0); // Exit with 0 to not break the build
 	}
-
 
 	const llmsTxtContent = generateLlmsTxt(pages);
 	const outputPath = path.join(process.cwd(), 'public', 'llms.txt');
 
 	ensureDirectoryExists(path.dirname(outputPath));
 	fs.writeFileSync(outputPath, llmsTxtContent, 'utf8');
+	console.log(`✅ Generated llms.txt with ${pages.length} pages`);
 }
 
+// Check if running as main module
 const isMainModule = import.meta.url === `file://${process.argv[1]}`;
 
 if (isMainModule) {
