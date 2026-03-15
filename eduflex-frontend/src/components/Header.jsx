@@ -62,11 +62,9 @@ const Header = ({ onMenuClick }) => {
 
   const handleLogout = () => {
     logout();
-    if (selectedSchool) {
-      navigate(`/school/${selectedSchool.id}/login`);
-    } else {
-      navigate('/');
-    }
+    // clear selected school and always go to home after logout
+    clearSelectedSchool();
+    navigate('/');
   };
 
   const handleSwitchSchool = () => {

@@ -39,7 +39,7 @@ const colors = {
 // Enhanced school data with more details
 const enhancedSchools = [
   {
-    id: 'LECLERC-001',
+    id: 'A-LECLERC-001',
     name: 'Lycée Général Leclerc',
     location: 'Yaoundé',
     region: 'Centre',
@@ -227,7 +227,7 @@ const SchoolSelectionModal = ({ isOpen, onClose }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedRegion, setSelectedRegion] = useState('all');
   const [selectedType, setSelectedType] = useState('all');
-  const [sortBy, setSortBy] = useState('name');
+  const [sortBy, setSortBy] = useState('id');
   const [showFilters, setShowFilters] = useState(false);
   const [hoveredSchool, setHoveredSchool] = useState(null);
 

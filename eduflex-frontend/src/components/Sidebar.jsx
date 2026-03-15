@@ -1,4 +1,4 @@
-
+// Sidebar.jsx - Updated with all navigation links
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
@@ -14,7 +14,14 @@ import {
   Award,
   Calendar,
   DollarSign,
-  Download
+  Download,
+  BookOpen,
+  ClipboardList,
+  TrendingUp,
+  School,
+  Bell,
+  Shield,
+  BarChart
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -34,7 +41,10 @@ const Sidebar = ({ isOpen, onClose }) => {
           { icon: GraduationCap, label: 'Students', path: '/admin/students' },
           { icon: UserCircle, label: 'Parents', path: '/admin/parents' },
           { icon: CheckCircle, label: 'Marks Verification', path: '/admin/marks' },
-          { icon: Settings, label: 'Settings', path: '/admin/settings' },
+          { icon: School, label: 'Schools', path: '/admin/schools' },
+          { icon: BarChart, label: 'Reports', path: '/admin/reports' },
+          { icon: Bell, label: 'Announcements', path: '/admin/announcements' },
+          { icon: Shield, label: 'Settings', path: '/admin/settings' },
           { icon: User, label: 'Profile', path: '/profile' }
         ];
       case 'teacher':
@@ -42,7 +52,11 @@ const Sidebar = ({ isOpen, onClose }) => {
           { icon: Home, label: 'Dashboard', path: '/teacher-dashboard' },
           { icon: Upload, label: 'Upload Marks', path: '/teacher/marks' },
           { icon: FileText, label: 'Assignments', path: '/teacher/assignments' },
+          { icon: BookOpen, label: 'My Subjects', path: '/teacher/subjects' },
           { icon: Users, label: 'Classes', path: '/teacher/classes' },
+          { icon: ClipboardList, label: 'Attendance', path: '/teacher/attendance' },
+          { icon: Calendar, label: 'Schedule', path: '/teacher/schedule' },
+          { icon: Bell, label: 'Announcements', path: '/teacher/announcements' },
           { icon: User, label: 'Profile', path: '/profile' }
         ];
       case 'student':
@@ -51,6 +65,10 @@ const Sidebar = ({ isOpen, onClose }) => {
           { icon: Award, label: 'Results', path: '/student/results' },
           { icon: FileText, label: 'Assignments', path: '/student/assignments' },
           { icon: Calendar, label: 'Attendance', path: '/student/attendance' },
+          { icon: BookOpen, label: 'My Classes', path: '/student/classes' },
+          { icon: ClipboardList, label: 'Timetable', path: '/student/timetable' },
+          { icon: Download, label: 'Study Material', path: '/student/materials' },
+          { icon: Bell, label: 'Announcements', path: '/student/announcements' },
           { icon: User, label: 'Profile', path: '/profile' }
         ];
       case 'parent':
@@ -59,6 +77,10 @@ const Sidebar = ({ isOpen, onClose }) => {
           { icon: Award, label: "Child's Results", path: '/parent/results' },
           { icon: DollarSign, label: 'Fees', path: '/parent/fees' },
           { icon: Download, label: 'Reports', path: '/parent/reports' },
+          { icon: Calendar, label: 'Attendance', path: '/parent/attendance' },
+          { icon: FileText, label: 'Assignments', path: '/parent/assignments' },
+          { icon: Bell, label: 'Announcements', path: '/parent/announcements' },
+          { icon: TrendingUp, label: 'Performance', path: '/parent/performance' },
           { icon: User, label: 'Profile', path: '/profile' }
         ];
       default:
@@ -86,17 +108,18 @@ const Sidebar = ({ isOpen, onClose }) => {
         )}
       >
         <div className="flex flex-col h-full p-4">
-          <nav className="flex-1 space-y-1">
+          <nav className="flex-1 space-y-1 overflow-y-auto">
             {menuItems.map((item) => {
               const Icon = item.icon;
-              const isActive = location.pathname === item.path;
+              const isActive = location.pathname === item.path || 
+                              (item.path !== '/profile' && location.pathname.startsWith(item.path));
 
               return (
                 <Link key={item.path} to={item.path} onClick={onClose}>
                   <Button
                     variant={isActive ? 'secondary' : 'ghost'}
                     className={cn(
-                      'w-full justify-start',
+                      'w-full justify-start mb-1',
                       isActive && 'bg-teal-100 text-teal-900 dark:bg-teal-900 dark:text-teal-100'
                     )}
                   >
