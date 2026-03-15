@@ -448,7 +448,7 @@ const HomePage = () => {
               <div className="relative text-center">
                 <div className="flex items-center justify-center mb-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
                   <img 
-                    src="/public/eduflex.png" 
+                    src="/eduflex.png" 
                     alt="EduFlex Logo" 
                     className="h-24 md:h-32 w-auto drop-shadow-2xl dark:brightness-90"
                   />

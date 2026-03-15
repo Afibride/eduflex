@@ -138,7 +138,7 @@ const LoginPage = () => {
             <div className="flex-1 text-center lg:text-left mb-8 lg:mb-0">
               <div className="flex items-center justify-center lg:justify-start mb-6">
                 <img 
-                  src="/public/eduflex.png" 
+                  src="/eduflex.png" 
                   alt="EduFlex Logo" 
                   className="h-16 w-auto"
                 />

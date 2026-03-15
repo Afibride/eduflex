@@ -83,7 +83,7 @@ const Footer = () => {
           <div className="col-span-2 md:col-span-1 space-y-4">
             <Link to="/" className="flex items-center space-x-2">
               <img 
-                src="/public/eduflex.png" 
+                src="/eduflex.png" 
                 alt="EduFlex Logo" 
                 className="h-8 md:h-10 w-auto brightness-0 invert"
               />

@@ -39,7 +39,7 @@ const colors = {
 // Enhanced school data with more details
 const enhancedSchools = [
   {
-    id: 'A-LECLERC-001',
+    id: 'LECLERC-001',
     name: 'Lycée Général Leclerc',
     location: 'Yaoundé',
     region: 'Centre',

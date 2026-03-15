@@ -99,7 +99,7 @@ const Header = ({ onMenuClick }) => {
 
           <Link to="/" className="flex items-center space-x-3">
             <img 
-              src="/public/eduflex.png" 
+              src="/eduflex.png" 
               alt="EduFlex Logo" 
               className="h-10 w-auto"
             />
