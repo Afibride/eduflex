@@ -121,10 +121,10 @@ const Header = ({ onMenuClick }) => {
                   <Link to="/">Home</Link>
                 </Button>
                 <Button variant="ghost" asChild className="text-gray-700 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 font-medium">
-                  <Link to="/register">Register School</Link>
+                  <Link to="/schools">Schools</Link>
                 </Button>
                 <Button variant="ghost" asChild className="text-gray-700 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 font-medium">
-                  <Link to="/login">Admin Login</Link>
+                  <Link to="/register">Register School</Link>
                 </Button>
                 <Button 
                   variant="default" 

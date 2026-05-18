@@ -13,6 +13,7 @@ import HomePage from '@/pages/HomePage.jsx';
 import LoginPage from '@/pages/LoginPage.jsx';
 import SchoolLoginPage from '@/pages/SchoolLoginPage.jsx';
 import SchoolLoginFormPage from '@/pages/SchoolLoginFormPage.jsx';
+import SchoolsDirectoryPage from '@/pages/SchoolsDirectoryPage.jsx';
 import AccountActivationPage from '@/pages/AccountActivationPage.jsx';
 import RegisterPage from '@/pages/RegisterPage.jsx';
 import About from '@/pages/About.jsx';
@@ -86,6 +87,7 @@ function App() {
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<PublicLayout><HomePage /></PublicLayout>} />
+          <Route path="/schools" element={<PublicLayout><SchoolsDirectoryPage /></PublicLayout>} />
           <Route path="/login" element={<PublicLayout><LoginPage /></PublicLayout>} />
           <Route path="/register" element={<PublicLayout><RegisterPage /></PublicLayout>} />
           <Route path="/about" element={<PublicLayout><About /></PublicLayout>} />

@@ -117,6 +117,17 @@ const cameroonFeatures = [
   }
 ];
 
+const CAMEROON_SCHOOL_IMAGES = [
+  'https://commons.wikimedia.org/wiki/Special:FilePath/College%20Lerclerc%20Yaound%C3%A9.jpg',
+  'https://commons.wikimedia.org/wiki/Special:FilePath/Primary%20school%20in%20Ngoulmakong%20East%20Region%20Cameroon.jpg',
+  'https://commons.wikimedia.org/wiki/Special:FilePath/German%20building%20at%20Ambam.jpg',
+  'https://commons.wikimedia.org/wiki/Special:FilePath/College%20Lerclerc%20Yaound%C3%A9.jpg',
+  'https://commons.wikimedia.org/wiki/Special:FilePath/Primary%20school%20in%20Ngoulmakong%20East%20Region%20Cameroon.jpg',
+  'https://commons.wikimedia.org/wiki/Special:FilePath/German%20building%20at%20Ambam.jpg',
+  'https://commons.wikimedia.org/wiki/Special:FilePath/College%20Lerclerc%20Yaound%C3%A9.jpg',
+  'https://commons.wikimedia.org/wiki/Special:FilePath/Primary%20school%20in%20Ngoulmakong%20East%20Region%20Cameroon.jpg',
+];
+
 const successStories = [
   {
     school: 'Government Bilingual High School',
@@ -124,7 +135,7 @@ const successStories = [
     improvement: '40% reduction in admin time',
     highlight: 'Streamlined attendance tracking and report generation',
     rating: 5,
-    image: 'https://images.unsplash.com/photo-1577896851231-70ef18881754?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+    image: CAMEROON_SCHOOL_IMAGES[2],
     principal: 'Mme. Marie Claire'
   },
   {
@@ -133,7 +144,7 @@ const successStories = [
     improvement: '60% faster parent-teacher communication',
     highlight: 'Real-time updates and automated progress reports',
     rating: 5,
-    image: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+    image: CAMEROON_SCHOOL_IMAGES[1],
     principal: 'Rev. Dr. Samuel Njie'
   },
   {
@@ -142,7 +153,7 @@ const successStories = [
     improvement: '35% increase in parent engagement',
     highlight: 'Mobile access to student performance and school events',
     rating: 5,
-    image: 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+    image: CAMEROON_SCHOOL_IMAGES[5],
     principal: 'M. Jean-Pierre Mbala'
   },
   {
@@ -151,7 +162,7 @@ const successStories = [
     improvement: '45% reduction in paperwork',
     highlight: 'Digital attendance and report cards',
     rating: 5,
-    image: 'https://images.unsplash.com/photo-1562774053-701939374585?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+    image: CAMEROON_SCHOOL_IMAGES[0],
     principal: 'Dr. Emilia Motaze'
   },
   {
@@ -160,7 +171,7 @@ const successStories = [
     improvement: '50% faster result processing',
     highlight: 'Automated grade computation and analysis',
     rating: 5,
-    image: 'https://images.unsplash.com/photo-1497633762265-9d0c5d6b4b3f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+    image: CAMEROON_SCHOOL_IMAGES[3],
     principal: 'Sr. Catherine Nchang'
   }
 ];
@@ -170,35 +181,35 @@ const testimonials = [
     name: 'Dr. Emmanuel Ndi',
     role: 'Principal, GBHS Bamenda',
     content: 'EduFlex has revolutionized how we manage our school. The bilingual support is perfect for our diverse student body.',
-    avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
+    avatar: CAMEROON_SCHOOL_IMAGES[2],
     rating: 5
   },
   {
     name: 'Mme. Rose Mballa',
     role: 'Head Teacher, École Publique Douala',
     content: 'The parent-teacher communication features have brought our school community closer together.',
-    avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
+    avatar: CAMEROON_SCHOOL_IMAGES[4],
     rating: 5
   },
   {
     name: 'Mr. Peter Taniform',
     role: 'IT Director, Saker Baptist College',
     content: 'Implementation was smooth and the support team is exceptional. Highly recommended for Cameroon schools.',
-    avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
+    avatar: CAMEROON_SCHOOL_IMAGES[1],
     rating: 5
   },
   {
     name: 'Sr. Catherine Nchang',
     role: 'Principal, Our Lady of Lourdes College',
     content: 'The platform has made result processing 50% faster. Our teachers love it!',
-    avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
+    avatar: CAMEROON_SCHOOL_IMAGES[6],
     rating: 5
   },
   {
     name: 'M. Jean-Pierre Mbala',
     role: 'Principal, Collège Jean Tabi',
     content: 'Parent engagement has increased significantly since we started using EduFlex.',
-    avatar: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
+    avatar: CAMEROON_SCHOOL_IMAGES[5],
     rating: 5
   }
 ];
@@ -209,35 +220,35 @@ const howItWorksSteps = [
     title: "Register Your School",
     description: "Complete a simple registration form to get started",
     step: "1",
-    image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+    image: CAMEROON_SCHOOL_IMAGES[0]
   },
   {
     icon: PenTool,
     title: "Configure Your Platform",
     description: "Set up your school profile, staff, and curriculum",
     step: "2",
-    image: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+    image: CAMEROON_SCHOOL_IMAGES[4]
   },
   {
     icon: Bell,
     title: "Launch & Engage",
     description: "Start using the platform with all stakeholders",
     step: "3",
-    image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+    image: CAMEROON_SCHOOL_IMAGES[7]
   },
   {
     icon: Users,
     title: "Train Your Staff",
     description: "Comprehensive training for teachers and administrators",
     step: "4",
-    image: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+    image: CAMEROON_SCHOOL_IMAGES[3]
   },
   {
     icon: Award,
     title: "Achieve Excellence",
     description: "Monitor progress and celebrate success",
     step: "5",
-    image: 'https://images.unsplash.com/photo-1577896851231-70ef18881754?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+    image: CAMEROON_SCHOOL_IMAGES[6],
   }
 ];
 
@@ -268,6 +279,10 @@ const HomePage = () => {
 
   const handleRegister = () => {
     navigate('/register');
+  };
+
+  const handleBrowseSchools = () => {
+    navigate('/schools');
   };
 
   // Scroll handlers for success stories
@@ -392,21 +407,21 @@ const HomePage = () => {
           {/* Floating Image Elements - Dark mode optimized */}
           <div className="absolute top-20 right-0 w-96 h-96 opacity-30 dark:opacity-10 rotate-12 hidden lg:block mix-blend-overlay dark:mix-blend-soft-light">
             <img 
-              src="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+              src={CAMEROON_SCHOOL_IMAGES[0]}
               alt=""
               className="w-full h-full object-cover rounded-3xl"
             />
           </div>
           <div className="absolute bottom-20 left-0 w-80 h-80 opacity-30 dark:opacity-10 -rotate-12 hidden lg:block mix-blend-overlay dark:mix-blend-soft-light">
             <img 
-              src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+              src={CAMEROON_SCHOOL_IMAGES[2]}
               alt=""
               className="w-full h-full object-cover rounded-3xl"
             />
           </div>
           <div className="absolute top-1/3 left-1/4 w-64 h-64 opacity-25 dark:opacity-10 hidden lg:block mix-blend-overlay dark:mix-blend-soft-light">
             <img 
-              src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+              src={CAMEROON_SCHOOL_IMAGES[7]}
               alt=""
               className="w-full h-full object-cover rounded-3xl"
             />
@@ -438,7 +453,7 @@ const HomePage = () => {
             <div className="relative mb-16">
               <div className="absolute inset-0 overflow-hidden rounded-3xl opacity-40 dark:opacity-20">
                 <img 
-                  src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80"
+                  src={CAMEROON_SCHOOL_IMAGES[3]}
                   alt=""
                   className="w-full h-full object-cover"
                 />
@@ -490,6 +505,15 @@ const HomePage = () => {
                     </span>
                   </button>
                   <button
+                    onClick={handleBrowseSchools}
+                    className="px-8 py-4 rounded-xl font-bold text-lg hover:shadow-xl transform hover:scale-105 active:scale-[0.98] transition-all duration-300 bg-white/95 dark:bg-gray-800/95 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white backdrop-blur-sm"
+                  >
+                    <span className="flex items-center justify-center gap-2">
+                      <School size={20} />
+                      Browse Schools
+                    </span>
+                  </button>
+                  <button
                     onClick={handleRegister}
                     className="px-8 py-4 rounded-xl font-bold text-lg hover:shadow-xl transform hover:scale-105 active:scale-[0.98] transition-all duration-300 bg-white/95 dark:bg-gray-800/95 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white backdrop-blur-sm"
                   >
@@ -523,7 +547,7 @@ const HomePage = () => {
               <div className="absolute inset-0 bg-gradient-to-r from-blue-200/50 to-green-200/50 dark:from-blue-900/30 dark:to-green-900/30 rounded-3xl -m-4 blur-xl"></div>
               <div className="relative rounded-2xl overflow-hidden shadow-2xl">
                 <img 
-                  src="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80"
+                  src={CAMEROON_SCHOOL_IMAGES[4]}
                   alt="Students studying"
                   className="w-full h-[300px] md:h-[400px] object-cover"
                 />
@@ -542,7 +566,7 @@ const HomePage = () => {
             <div id="features" className="mb-16 relative">
               <div className="absolute inset-0 overflow-hidden rounded-3xl">
                 <img 
-                  src="https://images.unsplash.com/photo-1546410531-bb4caa6b424d?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80"
+                  src={CAMEROON_SCHOOL_IMAGES[1]}
                   alt=""
                   className="w-full h-full object-cover opacity-30 dark:opacity-10"
                 />
@@ -596,7 +620,7 @@ const HomePage = () => {
                 <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 group overflow-hidden">
                   <div className="h-40 overflow-hidden">
                     <img 
-                      src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                      src={CAMEROON_SCHOOL_IMAGES[5]}
                       alt="School building"
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                     />
@@ -616,7 +640,7 @@ const HomePage = () => {
                 <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 group overflow-hidden">
                   <div className="h-40 overflow-hidden">
                     <img 
-                      src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                      src={CAMEROON_SCHOOL_IMAGES[3]}
                       alt="Teacher in classroom"
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                     />
@@ -636,7 +660,7 @@ const HomePage = () => {
                 <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 group overflow-hidden">
                   <div className="h-40 overflow-hidden">
                     <img 
-                      src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                      src={CAMEROON_SCHOOL_IMAGES[7]}
                       alt="Students studying"
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                     />
@@ -656,7 +680,7 @@ const HomePage = () => {
                 <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 group overflow-hidden">
                   <div className="h-40 overflow-hidden">
                     <img 
-                      src="https://images.unsplash.com/photo-1497633762265-9d0c5d6b4b3f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                      src={CAMEROON_SCHOOL_IMAGES[6]}
                       alt="Parents meeting"
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                     />
@@ -859,7 +883,7 @@ const HomePage = () => {
             <div className="mb-16 relative">
               <div className="absolute inset-0">
                 <img 
-                  src="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80"
+                  src={CAMEROON_SCHOOL_IMAGES[0]}
                   alt=""
                   className="w-full h-full object-cover opacity-30 dark:opacity-10 rounded-3xl"
                 />
@@ -950,7 +974,7 @@ const HomePage = () => {
             <div className="mb-16 relative">
               <div className="absolute inset-0 overflow-hidden rounded-3xl">
                 <img 
-                  src="https://images.unsplash.com/photo-1523580494863-6f3031224c94?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80"
+                  src={CAMEROON_SCHOOL_IMAGES[2]}
                   alt=""
                   className="w-full h-full object-cover opacity-30 dark:opacity-10"
                 />
@@ -974,28 +998,28 @@ const HomePage = () => {
                       title: "Academic Analytics",
                       description: "Track student performance and identify areas for improvement",
                       color: colors.primary.main,
-                      image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                      image: CAMEROON_SCHOOL_IMAGES[4]
                     },
                     {
                       icon: MessageSquare,
                       title: "Seamless Communication",
                       description: "Connect teachers, parents, and administrators instantly",
                       color: colors.secondary.main,
-                      image: "https://images.unsplash.com/photo-1521791136064-7986c2920216?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                      image: CAMEROON_SCHOOL_IMAGES[1]
                     },
                     {
                       icon: Shield,
                       title: "Data Security",
                       description: "Enterprise-grade security for all student and staff data",
                       color: colors.accent.main,
-                      image: "https://images.unsplash.com/photo-1563986768609-322da13575f3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                      image: CAMEROON_SCHOOL_IMAGES[3]
                     },
                     {
                       icon: Clock,
                       title: "Time Efficiency",
                       description: "Reduce administrative workload by up to 70%",
                       color: "#f97316",
-                      image: "https://images.unsplash.com/photo-1506784983877-45594efa4cbe?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                      image: CAMEROON_SCHOOL_IMAGES[6]
                     }
                   ].map((feature, index) => {
                     const IconComponent = feature.icon;
@@ -1028,7 +1052,7 @@ const HomePage = () => {
             <div className="text-center mb-16 relative">
               <div className="absolute inset-0 overflow-hidden rounded-3xl">
                 <img 
-                  src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80"
+                  src={CAMEROON_SCHOOL_IMAGES[7]}
                   alt=""
                   className="w-full h-full object-cover opacity-40 dark:opacity-20"
                 />
@@ -1056,6 +1080,15 @@ const HomePage = () => {
                       <Target size={20} />
                       Login to Your School
                       <ChevronRight size={20} />
+                    </span>
+                  </button>
+                  <button
+                    onClick={handleBrowseSchools}
+                    className="px-8 py-4 rounded-xl font-bold text-lg hover:shadow-xl transform hover:scale-105 active:scale-[0.98] transition-all duration-300 bg-white/95 dark:bg-gray-800/95 border-2 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white shadow-lg"
+                  >
+                    <span className="flex items-center justify-center gap-2">
+                      <School size={20} />
+                      Browse Schools
                     </span>
                   </button>
                   <button

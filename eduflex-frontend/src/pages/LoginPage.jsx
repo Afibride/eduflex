@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -19,6 +19,7 @@ const loginSchema = z.object({
 
 const LoginPage = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { login, logout } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [selectedRole, setSelectedRole] = useState('admin');
@@ -31,6 +32,13 @@ const LoginPage = () => {
   } = useForm({
     resolver: zodResolver(loginSchema)
   });
+
+  useEffect(() => {
+    const email = searchParams.get('email');
+    if (email) {
+      setValue('email', email);
+    }
+  }, [searchParams, setValue]);
 
   const onSubmit = async (data) => {
     const result = await login(data.email, data.password);
@@ -153,7 +161,7 @@ const LoginPage = () => {
               </h1>
               
               <p className="text-lg text-gray-600 mb-8 max-w-lg mx-auto lg:mx-0">
-                School owners and administrators can login directly here. Teachers, students, and parents should use their selected school portal.
+                School owners and administrators login with the school email and password used during registration. Teachers, students, and parents should use their selected school portal.
               </p>
 
               {/* Feature List */}
@@ -207,7 +215,7 @@ const LoginPage = () => {
                   </div>
                   <CardTitle className="text-2xl text-center text-gray-900">School Admin Login</CardTitle>
                   <CardDescription className="text-center text-gray-500">
-                    Enter your school admin credentials
+                    Use your registered school email and password
                   </CardDescription>
                 </CardHeader>
 
@@ -215,14 +223,14 @@ const LoginPage = () => {
                   <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
                     <div className="space-y-2">
                       <Label htmlFor="email" className="text-sm font-medium text-gray-700">
-                        Email Address
+                        School Email Address
                       </Label>
                       <div className="relative">
                         <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
                         <Input
                           id="email"
                           type="email"
-                          placeholder="admin@school.cm"
+                          placeholder="school@example.com"
                           className="pl-10 h-12 bg-gray-50 border-gray-200 focus:border-blue-500 focus:ring-blue-500 text-gray-900"
                           {...register('email')}
                         />
