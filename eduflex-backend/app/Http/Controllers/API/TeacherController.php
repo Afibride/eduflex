@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Teacher;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
@@ -49,46 +50,55 @@ class TeacherController extends Controller
             STR_PAD_LEFT
         );
 
-        $user = User::create([
-            'school_id' => $school->id,
-            'name' => $data['first_name'] . ' ' . $data['last_name'],
-            'email' => $data['email'],
-            'phone' => $data['phone'] ?? null,
-            'user_id' => $userId,
-            'role' => 'teacher',
-            'password' => Hash::make(Str::random(12)),
-            'is_active' => false,
-        ]);
+        $teacher = DB::transaction(function () use ($data, $school, $userId, $teacherNumber) {
+            $user = User::create([
+                'school_id' => $school->id,
+                'name' => $data['first_name'] . ' ' . $data['last_name'],
+                'email' => $data['email'],
+                'phone' => $data['phone'] ?? null,
+                'user_id' => $userId,
+                'role' => 'teacher',
+                'password' => Hash::make(Str::random(16)),
+                'is_active' => false,
+            ]);
 
-        $teacher = Teacher::create([
-            'user_id' => $user->id,
-            'school_id' => $school->id,
-            'teacher_number' => $teacherNumber,
-            'first_name' => $data['first_name'],
-            'last_name' => $data['last_name'],
-            'date_of_birth' => $data['date_of_birth'] ?? now()->subYears(25)->toDateString(),
-            'gender' => $data['gender'],
-            'qualification' => $data['qualification'] ?? 'Not specified',
-            'subjects' => $data['subjects'] ?? [],
-            'hire_date' => $data['hire_date'] ?? now()->toDateString(),
-            'status' => $data['status'] ?? 'active',
-        ]);
+            return Teacher::create([
+                'user_id' => $user->id,
+                'school_id' => $school->id,
+                'teacher_number' => $teacherNumber,
+                'first_name' => $data['first_name'],
+                'last_name' => $data['last_name'],
+                'date_of_birth' => $data['date_of_birth'] ?? now()->subYears(25)->toDateString(),
+                'gender' => $data['gender'],
+                'qualification' => $data['qualification'] ?? 'Not specified',
+                'subjects' => $data['subjects'] ?? [],
+                'hire_date' => $data['hire_date'] ?? now()->toDateString(),
+                'status' => $data['status'] ?? 'active',
+            ]);
+        });
 
         return response()->json([
             'message' => 'Teacher created successfully',
             'teacher' => $teacher->load('user'),
             'user_id' => $userId,
+            'activation_code' => $userId,
         ], 201);
     }
 
-    public function show($id)
+    public function show(Request $request, $id)
     {
-        return response()->json(Teacher::with(['user', 'homeroomClasses'])->findOrFail($id));
+        return response()->json(
+            Teacher::with(['user', 'homeroomClasses'])
+                ->where('school_id', $request->user()->school_id)
+                ->findOrFail($id)
+        );
     }
 
     public function update(Request $request, $id)
     {
-        $teacher = Teacher::with('user')->findOrFail($id);
+        $teacher = Teacher::with('user')
+            ->where('school_id', $request->user()->school_id)
+            ->findOrFail($id);
         $data = $request->validate([
             'first_name' => 'sometimes|string|max:255',
             'last_name' => 'sometimes|string|max:255',
@@ -112,11 +122,26 @@ class TeacherController extends Controller
         return response()->json(['message' => 'Teacher updated successfully', 'teacher' => $teacher->fresh('user')]);
     }
 
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
-        $teacher = Teacher::with('user')->findOrFail($id);
+        $teacher = Teacher::with('user')
+            ->where('school_id', $request->user()->school_id)
+            ->findOrFail($id);
         $teacher->user?->delete();
 
         return response()->json(['message' => 'Teacher deleted successfully']);
+    }
+
+    public function activationCode(Request $request, $id)
+    {
+        $teacher = Teacher::with('user')
+            ->where('school_id', $request->user()->school_id)
+            ->findOrFail($id);
+
+        return response()->json([
+            'activation_code' => $teacher->user->user_id,
+            'email' => $teacher->user->email,
+            'is_active' => $teacher->user->is_active,
+        ]);
     }
 }

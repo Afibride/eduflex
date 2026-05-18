@@ -9,6 +9,7 @@ use App\Models\Student;
 use App\Models\Attendance;
 use App\Models\Grade;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
@@ -54,6 +55,16 @@ class ParentController extends Controller
         $schoolId = $request->user()->school_id;
         $schoolCode = $request->user()->school->code;
 
+        if ($request->filled('student_ids')) {
+            $validStudentCount = Student::where('school_id', $schoolId)
+                ->whereIn('id', $request->student_ids)
+                ->count();
+
+            if ($validStudentCount !== count($request->student_ids)) {
+                return response()->json(['error' => 'One or more students do not belong to your school'], 422);
+            }
+        }
+
         // Generate parent number
         $parentNumber = $schoolCode . '-PAR-' . str_pad(
             Parente::where('school_id', $schoolId)->count() + 1, 
@@ -70,43 +81,45 @@ class ParentController extends Controller
             STR_PAD_LEFT
         );
 
-        // Create user account
-        $user = User::create([
-            'school_id' => $schoolId,
-            'name' => $request->first_name . ' ' . $request->last_name,
-            'email' => $request->email,
-            'phone' => $request->phone,
-            'user_id' => $userId,
-            'role' => 'parent',
-            'password' => Hash::make(Str::random(10)), // Temporary password
-            'is_active' => false, // Needs activation
-        ]);
+        $parent = DB::transaction(function () use ($request, $schoolId, $userId, $parentNumber) {
+            $user = User::create([
+                'school_id' => $schoolId,
+                'name' => $request->first_name . ' ' . $request->last_name,
+                'email' => $request->email,
+                'phone' => $request->phone,
+                'user_id' => $userId,
+                'role' => 'parent',
+                'password' => Hash::make(Str::random(16)),
+                'is_active' => false,
+            ]);
 
-        // Create parent profile
-        $parent = Parente::create([
-            'user_id' => $user->id,
-            'school_id' => $schoolId,
-            'parent_number' => $parentNumber,
-            'first_name' => $request->first_name,
-            'last_name' => $request->last_name,
-            'phone' => $request->phone,
-            'email' => $request->email,
-            'address' => $request->address,
-            'occupation' => $request->occupation,
-        ]);
+            $parent = Parente::create([
+                'user_id' => $user->id,
+                'school_id' => $schoolId,
+                'parent_number' => $parentNumber,
+                'first_name' => $request->first_name,
+                'last_name' => $request->last_name,
+                'phone' => $request->phone,
+                'email' => $request->email,
+                'address' => $request->address,
+                'occupation' => $request->occupation,
+            ]);
 
-        // Link students to parent
-        if ($request->has('student_ids')) {
-            foreach ($request->student_ids as $index => $studentId) {
-                $relationship = $request->relationships[$index] ?? 'guardian';
-                $parent->students()->attach($studentId, ['relationship' => $relationship]);
+            if ($request->has('student_ids')) {
+                foreach ($request->student_ids as $index => $studentId) {
+                    $relationship = $request->relationships[$index] ?? 'guardian';
+                    $parent->students()->attach($studentId, ['relationship' => $relationship]);
+                }
             }
-        }
+
+            return $parent;
+        });
 
         return response()->json([
             'message' => 'Parent created successfully',
             'parent' => $parent->load('user', 'students'),
             'user_id' => $userId,
+            'activation_code' => $userId,
             'temporary_password' => 'Will be sent via email'
         ], 201);
     }
@@ -114,9 +127,10 @@ class ParentController extends Controller
     /**
      * Display the specified parent
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
         $parent = Parente::with('user', 'students', 'students.studentClass', 'students.grades')
+            ->where('school_id', $request->user()->school_id)
             ->findOrFail($id);
 
         return response()->json($parent);
@@ -127,7 +141,7 @@ class ParentController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $parent = Parente::findOrFail($id);
+        $parent = Parente::where('school_id', $request->user()->school_id)->findOrFail($id);
 
         $validator = Validator::make($request->all(), [
             'first_name' => 'sometimes|string|max:255',
@@ -162,9 +176,9 @@ class ParentController extends Controller
     /**
      * Remove the specified parent
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
-        $parent = Parente::findOrFail($id);
+        $parent = Parente::where('school_id', $request->user()->school_id)->findOrFail($id);
         
         // Detach all students
         $parent->students()->detach();
@@ -183,9 +197,9 @@ class ParentController extends Controller
     /**
      * Get all children of a parent
      */
-    public function getChildren($id)
+    public function getChildren(Request $request, $id)
     {
-        $parent = Parente::findOrFail($id);
+        $parent = Parente::where('school_id', $request->user()->school_id)->findOrFail($id);
         
         $children = $parent->students()
             ->with(['studentClass', 'attendances' => function ($q) {
@@ -224,6 +238,8 @@ class ParentController extends Controller
         }
 
         $parent = Parente::findOrFail($id);
+        abort_unless($parent->school_id === $request->user()->school_id, 404);
+        Student::where('school_id', $request->user()->school_id)->findOrFail($request->student_id);
         
         // Check if already linked
         if ($parent->hasStudent($request->student_id)) {
@@ -243,9 +259,10 @@ class ParentController extends Controller
     /**
      * Unlink a student from parent
      */
-    public function unlinkStudent($id, $studentId)
+    public function unlinkStudent(Request $request, $id, $studentId)
     {
-        $parent = Parente::findOrFail($id);
+        $parent = Parente::where('school_id', $request->user()->school_id)->findOrFail($id);
+        Student::where('school_id', $request->user()->school_id)->findOrFail($studentId);
         
         if (!$parent->hasStudent($studentId)) {
             return response()->json(['error' => 'Student not linked to this parent'], 404);
@@ -316,7 +333,7 @@ class ParentController extends Controller
         $parent = Parente::where('user_id', $user->id)
             ->with(['school', 'students' => function ($q) {
                 $q->with(['studentClass', 'grades' => function ($g) {
-                    $g->where('academic_year', now()->year);
+                    $g->with('subject')->where('academic_year', now()->year);
                 }]);
             }])
             ->firstOrFail();
@@ -324,6 +341,19 @@ class ParentController extends Controller
         return response()->json([
             'user' => $user,
             'profile' => $parent,
+        ]);
+    }
+
+    public function activationCode(Request $request, $id)
+    {
+        $parent = Parente::with('user')
+            ->where('school_id', $request->user()->school_id)
+            ->findOrFail($id);
+
+        return response()->json([
+            'activation_code' => $parent->user->user_id,
+            'email' => $parent->user->email,
+            'is_active' => $parent->user->is_active,
         ]);
     }
 }

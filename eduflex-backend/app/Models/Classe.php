@@ -12,7 +12,7 @@ class Classe extends Model
     protected $table = 'classes';
 
     protected $fillable = [
-        'school_id', 'name', 'section', 'academic_year', 'homeroom_teacher_id', 'capacity'
+        'school_id', 'name', 'section', 'education_level', 'stream', 'academic_year', 'homeroom_teacher_id', 'capacity'
     ];
 
     protected $appends = ['full_name', 'students_count'];
@@ -44,7 +44,8 @@ class Classe extends Model
 
     public function getFullNameAttribute()
     {
-        return $this->section ? "{$this->name} {$this->section}" : $this->name;
+        $name = $this->section ? "{$this->name} {$this->section}" : $this->name;
+        return $this->stream ? "{$name} - {$this->stream}" : $name;
     }
 
     public function getStudentsCountAttribute()

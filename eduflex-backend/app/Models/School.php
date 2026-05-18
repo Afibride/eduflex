@@ -43,4 +43,14 @@ class School extends Model
     {
         return $this->hasMany(Subject::class);
     }
+
+    public function announcements()
+    {
+        return $this->hasMany(Announcement::class);
+    }
+
+    public function settings()
+    {
+        return $this->hasMany(SchoolSetting::class);
+    }
 }

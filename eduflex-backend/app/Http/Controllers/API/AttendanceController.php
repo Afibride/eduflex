@@ -4,6 +4,8 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\Attendance;
+use App\Models\Classe;
+use App\Models\Student;
 use Illuminate\Http\Request;
 
 class AttendanceController extends Controller
@@ -40,6 +42,9 @@ class AttendanceController extends Controller
                 'remarks' => 'nullable|string',
             ])->validate();
 
+            Student::where('school_id', $request->user()->school_id)->findOrFail($row['student_id']);
+            Classe::where('school_id', $request->user()->school_id)->findOrFail($row['class_id']);
+
             $saved[] = Attendance::updateOrCreate(
                 ['student_id' => $row['student_id'], 'date' => $row['date']],
                 [
@@ -55,7 +60,8 @@ class AttendanceController extends Controller
 
     public function update(Request $request, $id)
     {
-        $attendance = Attendance::findOrFail($id);
+        $attendance = Attendance::whereHas('student', fn ($q) => $q->where('school_id', $request->user()->school_id))
+            ->findOrFail($id);
         $data = $request->validate([
             'student_id' => 'sometimes|exists:students,id',
             'class_id' => 'sometimes|exists:classes,id',
@@ -64,13 +70,22 @@ class AttendanceController extends Controller
             'remarks' => 'nullable|string',
         ]);
 
+        if (isset($data['student_id'])) {
+            Student::where('school_id', $request->user()->school_id)->findOrFail($data['student_id']);
+        }
+        if (isset($data['class_id'])) {
+            Classe::where('school_id', $request->user()->school_id)->findOrFail($data['class_id']);
+        }
+
         $attendance->update($data);
 
         return response()->json(['message' => 'Attendance updated successfully', 'attendance' => $attendance->fresh(['student', 'studentClass'])]);
     }
 
-    public function getClassAttendance($classId, $date)
+    public function getClassAttendance(Request $request, $classId, $date)
     {
+        Classe::where('school_id', $request->user()->school_id)->findOrFail($classId);
+
         return response()->json(
             Attendance::with('student.user')
                 ->where('class_id', $classId)

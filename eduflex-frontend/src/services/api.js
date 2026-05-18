@@ -85,6 +85,10 @@ export const schoolAPI = {
     }
   },
   getById: (id) => api.get(`/schools/${id}`),
+  getAdminSchools: (params) => api.get('/admin/schools', { params }),
+  getAdminProfile: () => api.get('/admin/school/profile'),
+  updateAdminProfile: (data) => api.put('/admin/school/profile', data),
+  getMyAnnouncements: (params) => api.get('/school/announcements', { params }),
   getDashboardStats: () => api.get('/school/dashboard'),
 };
 
@@ -95,6 +99,7 @@ export const studentAPI = {
   getById: (id) => api.get(`/students/${id}`),
   update: (id, data) => api.put(`/students/${id}`, data),
   delete: (id) => api.delete(`/students/${id}`),
+  getActivationCode: (id) => api.get(`/students/${id}/activation-code`),
   getGrades: (id) => api.get(`/students/${id}/grades`),
   getAttendance: (id, params) => api.get(`/students/${id}/attendance`, { params }),
 };
@@ -106,6 +111,7 @@ export const teacherAPI = {
   getById: (id) => api.get(`/teachers/${id}`),
   update: (id, data) => api.put(`/teachers/${id}`, data),
   delete: (id) => api.delete(`/teachers/${id}`),
+  getActivationCode: (id) => api.get(`/teachers/${id}/activation-code`),
 };
 
 // Parents API
@@ -115,6 +121,7 @@ export const parentAPI = {
   getById: (id) => api.get(`/parents/${id}`),
   update: (id, data) => api.put(`/parents/${id}`, data),
   delete: (id) => api.delete(`/parents/${id}`),
+  getActivationCode: (id) => api.get(`/parents/${id}/activation-code`),
   getChildren: (id) => api.get(`/parents/${id}/children`),
   linkStudent: (id, studentId, relationship) => api.post(`/parents/${id}/link-student`, { student_id: studentId, relationship }),
   unlinkStudent: (id, studentId) => api.delete(`/parents/${id}/unlink-student/${studentId}`),
@@ -124,7 +131,9 @@ export const parentAPI = {
 
 // Classes API
 export const classAPI = {
+  getOptions: () => api.get('/classes/options'),
   getAll: (params) => api.get('/classes', { params }),
+  setup: (data) => api.post('/classes/setup', data),
   create: (data) => api.post('/classes', data),
   getById: (id) => api.get(`/classes/${id}`),
   update: (id, data) => api.put(`/classes/${id}`, data),
