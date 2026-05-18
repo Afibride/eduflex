@@ -29,7 +29,14 @@ const colors = {
   accent: '#9333ea',
 };
 
-const CAMEROON_SCHOOL_IMAGE = 'https://commons.wikimedia.org/wiki/Special:FilePath/College%20Lerclerc%20Yaound%C3%A9.jpg';
+const CAMEROON_SCHOOL_IMAGES = [
+  'https://commons.wikimedia.org/wiki/Special:FilePath/College%20Lerclerc%20Yaound%C3%A9.jpg',
+  'https://commons.wikimedia.org/wiki/Special:FilePath/College%20Vogt%20Yaound%C3%A9.jpg',
+  'https://commons.wikimedia.org/wiki/Special:FilePath/Lyc%C3%A9e%20Bilingue%20de%20Dschang.jpg',
+  'https://commons.wikimedia.org/wiki/Special:FilePath/Primary%20school%20in%20Ngoulmakong%20East%20Region%20Cameroon.jpg',
+  'https://commons.wikimedia.org/wiki/Special:FilePath/SalleClasse.jpg',
+  'https://commons.wikimedia.org/wiki/Special:FilePath/Des%20consignes%20donn%C3%A9es%20aux%20%C3%A9l%C3%A8ves%20%C3%A0%20Mb%C3%B4%20%28Bandjoun%29.jpg',
+];
 
 const SchoolLoginPage = () => {
   const { schoolId } = useParams();
@@ -63,7 +70,7 @@ const SchoolLoginPage = () => {
     title: `Welcome to ${schoolName}`,
     summary: 'School administrators will publish news, highlights, events, and important information here for the school community.',
     date: 'Latest',
-    image: CAMEROON_SCHOOL_IMAGE,
+    image: CAMEROON_SCHOOL_IMAGES[0],
   };
 
   const schoolPosts = [
@@ -130,8 +137,13 @@ const SchoolLoginPage = () => {
 
       <div className="min-h-screen bg-[#f6f8fb]">
         <section className="relative overflow-hidden bg-white">
+          <img
+            src={CAMEROON_SCHOOL_IMAGES[2]}
+            alt=""
+            className="absolute inset-0 h-full w-full object-cover opacity-[0.28]"
+          />
           <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-blue-600 via-green-600 to-purple-600" />
-          <div className="absolute inset-0 bg-[linear-gradient(120deg,rgba(37,99,235,0.08),rgba(22,163,74,0.04)_45%,rgba(147,51,234,0.07))]" />
+          <div className="absolute inset-0 bg-[linear-gradient(120deg,rgba(255,255,255,0.82),rgba(255,255,255,0.68)_45%,rgba(255,255,255,0.80))]" />
 
           <div className="relative mx-auto max-w-6xl px-4 py-8 md:py-12">
             <Button variant="ghost" asChild className="mb-8 text-gray-600 hover:bg-white/70">
@@ -236,6 +248,11 @@ const SchoolLoginPage = () => {
           <div className="grid gap-5 lg:grid-cols-[0.85fr_1.15fr]">
             <Card className="border-0 bg-white shadow-sm ring-1 ring-gray-200">
               <CardContent className="p-6">
+                <img
+                  src={CAMEROON_SCHOOL_IMAGES[3]}
+                  alt={`${schoolName} campus profile`}
+                  className="mb-5 h-44 w-full rounded-xl object-cover"
+                />
                 <p className="text-sm font-semibold uppercase tracking-wide text-blue-700">School profile</p>
                 <h2 className="mt-2 text-2xl font-bold text-gray-950">About {schoolName}</h2>
                 <div className="mt-5 space-y-4 text-sm text-gray-700">
@@ -258,6 +275,11 @@ const SchoolLoginPage = () => {
 
             <Card className="border-0 bg-white shadow-sm ring-1 ring-gray-200">
               <CardContent className="p-6">
+                <img
+                  src={CAMEROON_SCHOOL_IMAGES[5]}
+                  alt={`${schoolName} pupils receiving school updates`}
+                  className="mb-5 h-44 w-full rounded-xl object-cover"
+                />
                 <p className="text-sm font-semibold uppercase tracking-wide text-green-700">Admin-managed content</p>
                 <h2 className="mt-2 text-2xl font-bold text-gray-950">Programs, posts, and achievements</h2>
                 <div className="mt-5 grid gap-4 md:grid-cols-2">
@@ -330,7 +352,7 @@ const SchoolLoginPage = () => {
               </p>
             </div>
 
-            {schoolPosts.map(({ icon: Icon, category, title, text, color }) => (
+            {schoolPosts.map(({ icon: Icon, category, title, text, color }, index) => (
               <article key={title} className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-200 transition-shadow hover:shadow-md">
                 <div className="flex gap-4">
                   <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl" style={{ backgroundColor: `${color}18` }}>
@@ -342,6 +364,11 @@ const SchoolLoginPage = () => {
                     <p className="mt-1 text-sm leading-6 text-gray-600">{text}</p>
                   </div>
                 </div>
+                <img
+                  src={CAMEROON_SCHOOL_IMAGES[index + 3]}
+                  alt={`${category} from ${schoolName}`}
+                  className="mt-4 h-28 w-full rounded-xl object-cover"
+                />
               </article>
             ))}
           </div>
@@ -349,12 +376,13 @@ const SchoolLoginPage = () => {
 
         <section className="mx-auto grid max-w-6xl gap-4 px-4 pb-8 md:grid-cols-3">
           {[
-            { icon: GraduationCap, title: 'Students', text: 'View assignments, results, attendance, and materials.', color: colors.primary },
-            { icon: BookOpen, title: 'Teachers', text: 'Manage classes, marks, attendance, and announcements.', color: colors.secondary },
-            { icon: Users, title: 'Parents', text: 'Follow performance, fees, reports, and school updates.', color: colors.accent },
-          ].map(({ icon: Icon, title, text, color }) => (
+            { icon: GraduationCap, title: 'Students', text: 'View assignments, results, attendance, and materials.', color: colors.primary, image: CAMEROON_SCHOOL_IMAGES[5] },
+            { icon: BookOpen, title: 'Teachers', text: 'Manage classes, marks, attendance, and announcements.', color: colors.secondary, image: CAMEROON_SCHOOL_IMAGES[4] },
+            { icon: Users, title: 'Parents', text: 'Follow performance, fees, reports, and school updates.', color: colors.accent, image: CAMEROON_SCHOOL_IMAGES[3] },
+          ].map(({ icon: Icon, title, text, color, image }) => (
             <Card key={title} className="border-0 bg-white shadow-sm ring-1 ring-gray-200 transition-shadow hover:shadow-md">
               <CardContent className="p-6">
+                <img src={image} alt={`${title} portal access`} className="mb-4 h-32 w-full rounded-xl object-cover" />
                 <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl" style={{ backgroundColor: `${color}18` }}>
                   <Icon className="h-5 w-5" style={{ color }} />
                 </div>

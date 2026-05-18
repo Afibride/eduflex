@@ -120,12 +120,16 @@ const cameroonFeatures = [
 const CAMEROON_SCHOOL_IMAGES = [
   'https://commons.wikimedia.org/wiki/Special:FilePath/College%20Lerclerc%20Yaound%C3%A9.jpg',
   'https://commons.wikimedia.org/wiki/Special:FilePath/Primary%20school%20in%20Ngoulmakong%20East%20Region%20Cameroon.jpg',
-  'https://commons.wikimedia.org/wiki/Special:FilePath/German%20building%20at%20Ambam.jpg',
-  'https://commons.wikimedia.org/wiki/Special:FilePath/College%20Lerclerc%20Yaound%C3%A9.jpg',
-  'https://commons.wikimedia.org/wiki/Special:FilePath/Primary%20school%20in%20Ngoulmakong%20East%20Region%20Cameroon.jpg',
-  'https://commons.wikimedia.org/wiki/Special:FilePath/German%20building%20at%20Ambam.jpg',
-  'https://commons.wikimedia.org/wiki/Special:FilePath/College%20Lerclerc%20Yaound%C3%A9.jpg',
-  'https://commons.wikimedia.org/wiki/Special:FilePath/Primary%20school%20in%20Ngoulmakong%20East%20Region%20Cameroon.jpg',
+  'https://commons.wikimedia.org/wiki/Special:FilePath/College%20Vogt%20Yaound%C3%A9.jpg',
+  'https://commons.wikimedia.org/wiki/Special:FilePath/Government%20Bilingual%20High%20School%20Deido.jpg',
+  'https://commons.wikimedia.org/wiki/Special:FilePath/Lyc%C3%A9e%20Bilingue%20de%20Dschang.jpg',
+  'https://commons.wikimedia.org/wiki/Special:FilePath/SalleClasse.jpg',
+  'https://commons.wikimedia.org/wiki/Special:FilePath/WikiChallenge%20African%20Schools%202021%20Cameroon%2005.jpg',
+  'https://commons.wikimedia.org/wiki/Special:FilePath/I%20and%20my%20computer%20science%20students%20in%20class.jpg',
+  'https://commons.wikimedia.org/wiki/Special:FilePath/Des%20consignes%20donn%C3%A9es%20aux%20%C3%A9l%C3%A8ves%20%C3%A0%20Mb%C3%B4%20%28Bandjoun%29.jpg',
+  'https://commons.wikimedia.org/wiki/Special:FilePath/Cours%20Eps.jpg',
+  'https://commons.wikimedia.org/wiki/Special:FilePath/Ecole%20Publique%20de%20Bapeng-Bameka%20%284%29.jpg',
+  'https://commons.wikimedia.org/wiki/Special:FilePath/Ecole%20publique%20d%27Obala.jpg',
 ];
 
 const successStories = [
@@ -218,37 +222,37 @@ const howItWorksSteps = [
   {
     icon: BookMarked,
     title: "Register Your School",
-    description: "Complete a simple registration form to get started",
+    description: "Create the school workspace from your official school profile",
     step: "1",
     image: CAMEROON_SCHOOL_IMAGES[0]
   },
   {
     icon: PenTool,
     title: "Configure Your Platform",
-    description: "Set up your school profile, staff, and curriculum",
+    description: "Add classes, subjects, staff, and student records",
     step: "2",
-    image: CAMEROON_SCHOOL_IMAGES[4]
+    image: CAMEROON_SCHOOL_IMAGES[7]
   },
   {
     icon: Bell,
     title: "Launch & Engage",
-    description: "Start using the platform with all stakeholders",
+    description: "Share notices, events, and updates with the community",
     step: "3",
-    image: CAMEROON_SCHOOL_IMAGES[7]
+    image: CAMEROON_SCHOOL_IMAGES[8]
   },
   {
     icon: Users,
     title: "Train Your Staff",
-    description: "Comprehensive training for teachers and administrators",
+    description: "Support teachers as they manage classes and daily records",
     step: "4",
-    image: CAMEROON_SCHOOL_IMAGES[3]
+    image: CAMEROON_SCHOOL_IMAGES[5]
   },
   {
     icon: Award,
     title: "Achieve Excellence",
-    description: "Monitor progress and celebrate success",
+    description: "Track performance, attendance, and school achievements",
     step: "5",
-    image: CAMEROON_SCHOOL_IMAGES[6],
+    image: CAMEROON_SCHOOL_IMAGES[9],
   }
 ];
 
@@ -395,7 +399,7 @@ const HomePage = () => {
         {/* Dynamic Background with Images - Dark mode optimized */}
         <div className="fixed inset-0 z-0">
           {/* Base gradient - Adapts to dark mode */}
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-50/70 via-white/50 to-green-50/70 dark:from-gray-900/90 dark:via-gray-800/90 dark:to-gray-900/90 transition-colors duration-300"></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-50/55 via-white/35 to-green-50/55 dark:from-gray-900/76 dark:via-gray-800/70 dark:to-gray-900/76 transition-colors duration-300"></div>
           
           {/* Pattern Overlay - Dark mode version */}
           <div className="absolute inset-0 opacity-10 dark:opacity-5"
@@ -405,21 +409,21 @@ const HomePage = () => {
           />
 
           {/* Floating Image Elements - Dark mode optimized */}
-          <div className="absolute top-20 right-0 w-96 h-96 opacity-30 dark:opacity-10 rotate-12 hidden lg:block mix-blend-overlay dark:mix-blend-soft-light">
+          <div className="absolute top-20 right-0 w-96 h-96 opacity-[0.45] dark:opacity-[0.22] rotate-12 hidden lg:block mix-blend-multiply dark:mix-blend-soft-light">
             <img 
               src={CAMEROON_SCHOOL_IMAGES[0]}
               alt=""
               className="w-full h-full object-cover rounded-3xl"
             />
           </div>
-          <div className="absolute bottom-20 left-0 w-80 h-80 opacity-30 dark:opacity-10 -rotate-12 hidden lg:block mix-blend-overlay dark:mix-blend-soft-light">
+          <div className="absolute bottom-20 left-0 w-80 h-80 opacity-[0.45] dark:opacity-[0.22] -rotate-12 hidden lg:block mix-blend-multiply dark:mix-blend-soft-light">
             <img 
               src={CAMEROON_SCHOOL_IMAGES[2]}
               alt=""
               className="w-full h-full object-cover rounded-3xl"
             />
           </div>
-          <div className="absolute top-1/3 left-1/4 w-64 h-64 opacity-25 dark:opacity-10 hidden lg:block mix-blend-overlay dark:mix-blend-soft-light">
+          <div className="absolute top-1/3 left-1/4 w-64 h-64 opacity-40 dark:opacity-20 hidden lg:block mix-blend-multiply dark:mix-blend-soft-light">
             <img 
               src={CAMEROON_SCHOOL_IMAGES[7]}
               alt=""
@@ -451,13 +455,13 @@ const HomePage = () => {
           <div className="container mx-auto px-4">
             {/* Hero Section with Dark Mode */}
             <div className="relative mb-16">
-              <div className="absolute inset-0 overflow-hidden rounded-3xl opacity-40 dark:opacity-20">
+              <div className="absolute inset-0 overflow-hidden rounded-3xl opacity-[0.55] dark:opacity-30">
                 <img 
                   src={CAMEROON_SCHOOL_IMAGES[3]}
                   alt=""
                   className="w-full h-full object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-r from-white/60 via-transparent to-white/60 dark:from-gray-900/80 dark:via-transparent dark:to-gray-900/80"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-white/45 via-white/10 to-white/45 dark:from-gray-900/65 dark:via-gray-900/20 dark:to-gray-900/65"></div>
               </div>
               
               <div className="relative text-center">
@@ -551,7 +555,7 @@ const HomePage = () => {
                   alt="Students studying"
                   className="w-full h-[300px] md:h-[400px] object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent dark:from-black/90"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/58 via-black/10 to-transparent dark:from-black/76"></div>
                 <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
                   <h3 className="text-2xl font-bold mb-2 drop-shadow-lg">See EduFlex in Action</h3>
                   <p className="text-white/90 drop-shadow">Watch how schools across Cameroon are transforming education</p>
@@ -568,9 +572,9 @@ const HomePage = () => {
                 <img 
                   src={CAMEROON_SCHOOL_IMAGES[1]}
                   alt=""
-                  className="w-full h-full object-cover opacity-30 dark:opacity-10"
+                  className="w-full h-full object-cover opacity-[0.45] dark:opacity-[0.24]"
                 />
-                <div className="absolute inset-0 bg-gradient-to-br from-white/80 via-white/60 to-white/80 dark:from-gray-900/80 dark:via-gray-800/80 dark:to-gray-900/80"></div>
+                <div className="absolute inset-0 bg-gradient-to-br from-white/68 via-white/45 to-white/68 dark:from-gray-900/72 dark:via-gray-800/64 dark:to-gray-900/72"></div>
               </div>
               
               <div className="relative">
@@ -885,9 +889,9 @@ const HomePage = () => {
                 <img 
                   src={CAMEROON_SCHOOL_IMAGES[0]}
                   alt=""
-                  className="w-full h-full object-cover opacity-30 dark:opacity-10 rounded-3xl"
+                  className="w-full h-full object-cover opacity-[0.48] dark:opacity-[0.26] rounded-3xl"
                 />
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-100/80 to-green-100/80 dark:from-gray-900/90 dark:to-gray-800/90 rounded-3xl"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-100/62 to-green-100/62 dark:from-gray-900/76 dark:to-gray-800/72 rounded-3xl"></div>
               </div>
               
               <div className="relative p-8">
@@ -976,9 +980,9 @@ const HomePage = () => {
                 <img 
                   src={CAMEROON_SCHOOL_IMAGES[2]}
                   alt=""
-                  className="w-full h-full object-cover opacity-30 dark:opacity-10"
+                  className="w-full h-full object-cover opacity-[0.45] dark:opacity-[0.24]"
                 />
-                <div className="absolute inset-0 bg-gradient-to-br from-white/80 via-white/60 to-white/80 dark:from-gray-900/80 dark:via-gray-800/80 dark:to-gray-900/80"></div>
+                <div className="absolute inset-0 bg-gradient-to-br from-white/68 via-white/45 to-white/68 dark:from-gray-900/72 dark:via-gray-800/64 dark:to-gray-900/72"></div>
               </div>
               
               <div className="relative">
@@ -1048,21 +1052,73 @@ const HomePage = () => {
               </div>
             </div>
 
-            {/* Final CTA with Image - Dark Mode */}
-            <div className="text-center mb-16 relative">
-              <div className="absolute inset-0 overflow-hidden rounded-3xl">
-                <img 
-                  src={CAMEROON_SCHOOL_IMAGES[7]}
-                  alt=""
-                  className="w-full h-full object-cover opacity-40 dark:opacity-20"
-                />
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-100/80 to-green-100/80 dark:from-gray-900/90 dark:to-gray-800/90"></div>
+            {/* Final CTA with Vector Background - Dark Mode */}
+            <div className="text-center mb-16 relative overflow-hidden rounded-3xl border border-blue-100 bg-[#f7fbff] shadow-sm dark:border-gray-700 dark:bg-gray-900">
+              <div className="absolute inset-0 overflow-hidden">
+                <svg
+                  aria-hidden="true"
+                  className="absolute inset-0 h-full w-full"
+                  viewBox="0 0 1200 360"
+                  preserveAspectRatio="xMidYMid slice"
+                >
+                  <defs>
+                    <linearGradient id="ctaSky" x1="0" x2="1" y1="0" y2="1">
+                      <stop offset="0%" stopColor="#eff6ff" />
+                      <stop offset="55%" stopColor="#f8fafc" />
+                      <stop offset="100%" stopColor="#ecfdf5" />
+                    </linearGradient>
+                    <linearGradient id="ctaDevice" x1="0" x2="1" y1="0" y2="1">
+                      <stop offset="0%" stopColor="#2563eb" />
+                      <stop offset="100%" stopColor="#16a34a" />
+                    </linearGradient>
+                  </defs>
+                  <rect width="1200" height="360" fill="url(#ctaSky)" />
+                  <circle cx="1030" cy="78" r="86" fill="#dbeafe" opacity="0.75" />
+                  <circle cx="150" cy="298" r="126" fill="#dcfce7" opacity="0.62" />
+                  <path d="M0 294 C190 250 292 320 480 278 C650 240 770 278 916 244 C1034 217 1115 214 1200 232 L1200 360 L0 360 Z" fill="#bfdbfe" opacity="0.48" />
+                  <path d="M0 322 C225 278 370 342 596 306 C790 276 910 320 1200 274 L1200 360 L0 360 Z" fill="#bbf7d0" opacity="0.55" />
+
+                  <g transform="translate(86 120)" opacity="0.95">
+                    <rect x="16" y="90" width="238" height="116" rx="18" fill="#ffffff" />
+                    <path d="M0 98 L135 24 L270 98 Z" fill="#2563eb" />
+                    <rect x="48" y="124" width="44" height="46" rx="10" fill="#dbeafe" />
+                    <rect x="113" y="124" width="44" height="46" rx="10" fill="#dcfce7" />
+                    <rect x="178" y="124" width="44" height="46" rx="10" fill="#f3e8ff" />
+                    <rect x="112" y="178" width="46" height="28" rx="8" fill="#16a34a" />
+                    <path d="M72 210 H198" stroke="#0f172a" strokeOpacity="0.12" strokeWidth="10" strokeLinecap="round" />
+                  </g>
+
+                  <g transform="translate(804 82)" opacity="0.94">
+                    <rect x="0" y="0" width="270" height="178" rx="28" fill="#ffffff" />
+                    <rect x="22" y="24" width="226" height="130" rx="18" fill="#eff6ff" />
+                    <rect x="46" y="48" width="72" height="66" rx="14" fill="#dbeafe" />
+                    <rect x="134" y="48" width="90" height="20" rx="10" fill="#bfdbfe" />
+                    <rect x="134" y="82" width="70" height="18" rx="9" fill="#bbf7d0" />
+                    <rect x="134" y="116" width="50" height="18" rx="9" fill="#e9d5ff" />
+                    <circle cx="82" cy="80" r="20" fill="#2563eb" />
+                    <path d="M52 114 C58 82 106 82 112 114 Z" fill="#16a34a" opacity="0.86" />
+                    <path d="M82 80 L82 57" stroke="#ffffff" strokeWidth="7" strokeLinecap="round" />
+                  </g>
+
+                  <g transform="translate(498 110)" opacity="0.82">
+                    <rect x="76" y="44" width="148" height="98" rx="22" fill="url(#ctaDevice)" />
+                    <rect x="100" y="64" width="100" height="16" rx="8" fill="#ffffff" opacity="0.85" />
+                    <rect x="100" y="96" width="42" height="28" rx="10" fill="#ffffff" opacity="0.82" />
+                    <rect x="158" y="96" width="42" height="28" rx="10" fill="#ffffff" opacity="0.66" />
+                    <circle cx="34" cy="92" r="24" fill="#2563eb" />
+                    <path d="M0 164 C5 114 63 114 68 164 Z" fill="#2563eb" opacity="0.86" />
+                    <circle cx="266" cy="92" r="24" fill="#16a34a" />
+                    <path d="M232 164 C237 114 295 114 300 164 Z" fill="#16a34a" opacity="0.86" />
+                    <path d="M68 96 H76 M224 96 H232" stroke="#0f172a" strokeOpacity="0.18" strokeWidth="9" strokeLinecap="round" />
+                  </g>
+                </svg>
+                <div className="absolute inset-0 bg-white/45 dark:bg-gray-950/48" />
               </div>
               <div className="relative py-16 px-4">
-                <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                <h2 className="text-4xl font-black text-slate-950 dark:text-white mb-4">
                   Ready to Transform Your School?
                 </h2>
-                <p className="text-lg text-gray-700 dark:text-gray-300 max-w-2xl mx-auto mb-8">
+                <p className="text-lg font-medium text-slate-700 dark:text-slate-200 max-w-2xl mx-auto mb-8">
                   Join thousands of schools across Cameroon that are already experiencing the benefits of digital transformation.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">

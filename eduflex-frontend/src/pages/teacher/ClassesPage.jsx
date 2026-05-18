@@ -4,7 +4,7 @@ import { Helmet } from 'react-helmet';
 import { 
   Users, GraduationCap, BookOpen, Calendar,
   Download, Eye, Mail, MessageSquare,
-  TrendingUp, Filter, Search
+  TrendingUp, Filter, Search, Award
 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -14,6 +14,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import DashboardLayout from '@/components/DashboardLayout.jsx';
 import { toast } from 'sonner';
 

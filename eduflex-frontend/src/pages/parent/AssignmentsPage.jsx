@@ -4,7 +4,7 @@ import { Helmet } from 'react-helmet';
 import { 
   FileText, Download, Eye, Calendar,
   Clock, CheckCircle, XCircle, AlertCircle,
-  User, Filter, ChevronDown, ChevronUp
+  User, Filter, ChevronDown, ChevronUp, Award
 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';

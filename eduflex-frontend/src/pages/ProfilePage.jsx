@@ -1,4 +1,6 @@
 // pages/ProfilePage.jsx
+import { useState } from 'react';
+import { Helmet } from 'react-helmet';
 import { 
   User, Mail, Phone, MapPin, Calendar, Briefcase, 
   GraduationCap, Users, Award, Settings, Camera, 
