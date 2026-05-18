@@ -28,7 +28,10 @@ const AccountActivationPage = () => {
   const navigate = useNavigate();
   const { schools, activateAccount } = useAuth();
 
-  const school = schools.find(s => s.id === schoolId);
+  const school = schools.find(s =>
+    String(s.id).toLowerCase() === String(schoolId).toLowerCase() ||
+    String(s.code || '').toLowerCase() === String(schoolId).toLowerCase()
+  );
 
   useEffect(() => {
     if (!school) {

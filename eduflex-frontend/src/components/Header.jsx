@@ -85,7 +85,7 @@ const Header = ({ onMenuClick }) => {
   return (
     <>
       <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 shadow-sm dark:bg-gray-900/95 dark:border-gray-800">
-        <div className="flex h-20 items-center px-4 md:px-6 max-w-7xl mx-auto">
+        <div className="flex h-20 items-center px-3 sm:px-4 md:px-6 max-w-7xl mx-auto">
           {user && (
             <Button
               variant="ghost"
@@ -97,11 +97,11 @@ const Header = ({ onMenuClick }) => {
             </Button>
           )}
 
-          <Link to="/" className="flex items-center space-x-3">
+          <Link to="/" className="flex min-w-0 items-center space-x-3">
             <img 
               src="/eduflex.png" 
               alt="EduFlex Logo" 
-              className="h-10 w-auto"
+              className="h-8 w-auto sm:h-10"
             />
           </Link>
 
@@ -114,11 +114,14 @@ const Header = ({ onMenuClick }) => {
 
           <div className="flex-1" />
 
-          <div className="flex items-center space-x-2 md:space-x-4">
+          <div className="flex shrink-0 items-center space-x-1 sm:space-x-2 md:space-x-4">
             {!user && (
               <div className="hidden md:flex items-center space-x-1">
                 <Button variant="ghost" asChild className="text-gray-700 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 font-medium">
                   <Link to="/">Home</Link>
+                </Button>
+                <Button variant="ghost" asChild className="text-gray-700 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 font-medium">
+                  <Link to="/schools">Schools</Link>
                 </Button>
                 <Button variant="ghost" asChild className="text-gray-700 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 font-medium">
                   <Link to="/register">Register School</Link>
@@ -131,7 +134,7 @@ const Header = ({ onMenuClick }) => {
                   }}
                   onClick={() => setIsModalOpen(true)}
                 >
-                  Login/Activate
+                  Student/Staff Login
                 </Button>
               </div>
             )}

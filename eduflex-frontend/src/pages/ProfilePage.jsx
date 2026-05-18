@@ -1,5 +1,5 @@
 // pages/ProfilePage.jsx
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { 
   User, Mail, Phone, MapPin, Calendar, Briefcase, 
@@ -14,6 +14,14 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
+// Add these imports:
+import { 
+  Select, 
+  SelectTrigger, 
+  SelectValue, 
+  SelectContent, 
+  SelectItem 
+} from '@/components/ui/select';
 import { useAuth } from '@/contexts/AuthContext.jsx';
 import DashboardLayout from '@/components/DashboardLayout.jsx';
 import { toast } from 'sonner';

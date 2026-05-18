@@ -1,4 +1,4 @@
-// SchoolLoginFormPage.jsx - Updated to match LoginPage style
+// pages/SchoolLoginFormPage.jsx
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
@@ -15,7 +15,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { useAuth } from '@/contexts/AuthContext.jsx';
+import { useAuth } from '@/contexts/AuthContext';
 
 const loginSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
@@ -71,17 +71,40 @@ const SchoolLoginFormPage = () => {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [selectedRole, setSelectedRole] = useState('student');
+  const [isLoading, setIsLoading] = useState(false);
 
   const action = searchParams.get('action') || 'login';
   const isLogin = action === 'login';
 
-  const school = schools.find(s => s.id === schoolId);
+  // FIXED: Better school lookup with debugging
+  const school = React.useMemo(() => {
+    if (!schools.length) return null;
+
+    const paramId = String(schoolId || '').toLowerCase();
+    return schools.find(s =>
+      String(s.id).toLowerCase() === paramId ||
+      String(s.code || '').toLowerCase() === paramId
+    ) || null;
+  }, [schools, schoolId]);
+
+  // Debug logging
+  useEffect(() => {
+    console.log('=== SchoolLoginFormPage Debug ===');
+    console.log('schoolId from URL:', schoolId);
+    console.log('schoolId type:', typeof schoolId);
+    console.log('Schools available:', schools.length);
+    console.log('School found:', school?.name || 'Not found');
+    console.log('================================');
+  }, [schoolId, schools, school]);
 
   useEffect(() => {
-    if (!school) {
-      navigate('/');
+    if (!school && schools.length > 0 && schoolId) {
+      toast.error(`School "${schoolId}" not found. Please select a valid school.`);
+      setTimeout(() => {
+        navigate('/');
+      }, 2000);
     }
-  }, [school, navigate]);
+  }, [school, schools, navigate, schoolId]);
 
   const {
     register: registerLogin,
@@ -102,55 +125,70 @@ const SchoolLoginFormPage = () => {
   });
 
   const onLogin = async (data) => {
-    const result = login(data.email, data.password, schoolId);
-
-    if (result.success) {
-      toast.success('Login successful! Redirecting...', {
-        duration: 3000,
-        icon: <Sparkles className="text-green-500" />
-      });
+    setIsLoading(true);
+    try {
+      const result = await login(data.email, data.password, school?.id);
       
-      const dashboardMap = {
-        admin: '/admin-dashboard',
-        teacher: '/teacher-dashboard',
-        student: '/student-dashboard',
-        parent: '/parent-dashboard'
-      };
-      
-      setTimeout(() => {
-        navigate(dashboardMap[result.user.role] || '/');
-      }, 1500);
-    } else {
-      toast.error(result.error || 'Invalid email or password', {
-        duration: 4000
-      });
+      if (result.success) {
+        toast.success('Login successful! Redirecting...', {
+          duration: 3000,
+          icon: <Sparkles className="text-green-500" />
+        });
+        
+        const dashboardMap = {
+          admin: '/admin-dashboard',
+          teacher: '/teacher-dashboard',
+          student: '/student-dashboard',
+          parent: '/parent-dashboard'
+        };
+        
+        setTimeout(() => {
+          navigate(dashboardMap[result.user.role] || '/');
+        }, 1500);
+      } else {
+        toast.error(result.error || 'Invalid email or password', {
+          duration: 4000
+        });
+      }
+    } catch (error) {
+      console.error('Login submission error:', error);
+      toast.error('An unexpected error occurred. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const onActivate = async (data) => {
-    const isEmail = data.emailOrPhone.includes('@');
-    const email = isEmail ? data.emailOrPhone : '';
-    const phone = !isEmail ? data.emailOrPhone : '';
+    setIsLoading(true);
+    try {
+      const isEmail = data.emailOrPhone.includes('@');
+      const email = isEmail ? data.emailOrPhone : '';
+      const phone = !isEmail ? data.emailOrPhone : '';
 
-    const result = activateAccount(data.userId, email, phone, data.newPassword);
-
-    if (result.success) {
-      toast.success('Account activated successfully! You can now login.', {
-        duration: 4000,
-        icon: <CheckCircle className="text-green-500" />
-      });
-      setSearchParams({ action: 'login' });
-    } else {
-      toast.error(result.error || 'Activation failed. Please check your details.', {
-        duration: 4000
-      });
+      const result = await activateAccount(data.userId, email, phone, data.newPassword);
+      
+      if (result.success) {
+        toast.success('Account activated successfully! You can now login.', {
+          duration: 4000,
+          icon: <CheckCircle className="text-green-500" />
+        });
+        setSearchParams({ action: 'login' });
+      } else {
+        toast.error(result.error || 'Activation failed. Please check your details.', {
+          duration: 4000
+        });
+      }
+    } catch (error) {
+      console.error('Activation submission error:', error);
+      toast.error('An unexpected error occurred. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const fillDemoCredentials = (role) => {
     setSelectedRole(role);
     const credentials = {
-      admin: { email: 'admin@leclerc.edu.cm', password: 'password123' },
       teacher: { email: 'teacher@leclerc.edu.cm', password: 'password123' },
       student: { email: 'student@leclerc.edu.cm', password: 'password123' },
       parent: { email: 'parent@leclerc.edu.cm', password: 'password123' }
@@ -161,19 +199,50 @@ const SchoolLoginFormPage = () => {
   };
 
   const fillActivationDemo = () => {
-    setActivateValue('userId', `${schoolId}-STUDENT-002`);
-    setActivateValue('emailOrPhone', 'new@leclerc.edu.cm');
+    setActivateValue('userId', `${school?.code || schoolId}-STUDENT-002`);
+    setActivateValue('emailOrPhone', 'newstudent@leclerc.edu.cm');
     setActivateValue('newPassword', 'password123');
     setActivateValue('confirmPassword', 'password123');
   };
 
-  if (!school) return null;
+  // Loading state
+  if (schools.length === 0) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading school information...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // If school not found and we have schools loaded, show error
+  if (!school && schools.length > 0 && schoolId) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Card className="max-w-md w-full mx-4">
+          <CardHeader>
+            <CardTitle className="text-center text-red-600">School Not Found</CardTitle>
+            <CardDescription className="text-center">
+              The school you're looking for doesn't exist or has been removed.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button onClick={() => navigate('/')} className="w-full">
+              Return to Home
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <>
       <Helmet>
-        <title>{isLogin ? 'Login' : 'Activate Account'} - {school.name}</title>
-        <meta name="description" content={`${isLogin ? 'Login to' : 'Activate'} your ${school.name} account on EduFlex.`} />
+        <title>{isLogin ? 'Login' : 'Activate Account'} - {school?.name || 'School Portal'}</title>
+        <meta name="description" content={`${isLogin ? 'Login to' : 'Activate'} your ${school?.name || 'school'} account on EduFlex.`} />
       </Helmet>
 
       <div className="min-h-screen flex items-center justify-center relative overflow-hidden"
@@ -208,13 +277,13 @@ const SchoolLoginFormPage = () => {
               <div className="flex items-center justify-center lg:justify-start mb-6">
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-blue-600 to-green-600 flex items-center justify-center text-white font-bold text-xl">
-                    {school.logo || school.name.charAt(0)}
+                    {school?.logo || school?.name?.charAt(0) || 'S'}
                   </div>
                   <div>
-                    <h2 className="text-2xl font-bold text-gray-900">{school.name}</h2>
+                    <h2 className="text-2xl font-bold text-gray-900">{school?.name}</h2>
                     <div className="flex items-center gap-2 text-sm text-gray-600">
                       <MapPin size={14} className="text-green-600" />
-                      <span>{school.location}</span>
+                      <span>{school?.location || school?.city || 'Cameroon'}</span>
                     </div>
                   </div>
                 </div>
@@ -223,7 +292,7 @@ const SchoolLoginFormPage = () => {
               <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
                 {isLogin ? 'Welcome Back to' : 'Join'}{' '}
                 <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-green-600">
-                  {school.name}
+                  {school?.name || 'Your School'}
                 </span>
               </h1>
               
@@ -255,19 +324,19 @@ const SchoolLoginFormPage = () => {
                   <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-blue-50">
                     <School size={20} color={colors.primary.main} />
                   </div>
-                  <span className="text-sm text-gray-700">Est. {school.established || '1980'}</span>
+                  <span className="text-sm text-gray-700">Est. 1980</span>
                 </div>
                 <div className="flex items-center gap-3 bg-white/80 backdrop-blur-sm p-3 rounded-xl shadow-sm">
                   <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-green-50">
                     <Phone size={20} color={colors.secondary.main} />
                   </div>
-                  <span className="text-sm text-gray-700">{school.phone}</span>
+                  <span className="text-sm text-gray-700">{school?.phone || '+237 6XX XXX XXX'}</span>
                 </div>
                 <div className="flex items-center gap-3 bg-white/80 backdrop-blur-sm p-3 rounded-xl shadow-sm">
                   <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-purple-50">
                     <Mail size={20} color={colors.accent.main} />
                   </div>
-                  <span className="text-sm text-gray-700">{school.email}</span>
+                  <span className="text-sm text-gray-700">{school?.email || 'contact@school.edu.cm'}</span>
                 </div>
               </div>
             </div>
@@ -363,11 +432,11 @@ const SchoolLoginFormPage = () => {
                         style={{
                           background: `linear-gradient(135deg, ${colors.primary.main}, ${colors.secondary.main})`
                         }}
-                        disabled={isLoginSubmitting}
+                        disabled={isLoginSubmitting || isLoading}
                       >
                         <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
                         <span className="relative flex items-center justify-center gap-2">
-                          {isLoginSubmitting ? (
+                          {isLoginSubmitting || isLoading ? (
                             <>
                               <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                               Logging in...
@@ -398,11 +467,11 @@ const SchoolLoginFormPage = () => {
                     <form onSubmit={handleActivateSubmit(onActivate)} className="space-y-4">
                       <div className="space-y-2">
                         <Label htmlFor="userId" className="text-sm font-medium text-gray-700">
-                          School ID
+                          School ID / User ID
                         </Label>
                         <Input
                           id="userId"
-                          placeholder={`e.g. ${schoolId}-STUDENT-001`}
+                          placeholder={`e.g. ${school?.code || schoolId}-STUDENT-001`}
                           className="h-12 bg-gray-50 border-gray-200 focus:border-purple-500 focus:ring-purple-500 text-gray-900"
                           {...registerActivate('userId')}
                         />
@@ -413,7 +482,7 @@ const SchoolLoginFormPage = () => {
                           </p>
                         )}
                         <p className="text-xs text-gray-400">
-                          Format: {schoolId}-ROLE-NUMBER (e.g., {schoolId}-STUDENT-002)
+                          Format: {school?.code || schoolId}-ROLE-NUMBER (e.g., {school?.code || schoolId}-STUDENT-002)
                         </p>
                       </div>
 
@@ -499,11 +568,11 @@ const SchoolLoginFormPage = () => {
                         style={{
                           background: `linear-gradient(135deg, ${colors.accent.main}, ${colors.primary.main})`
                         }}
-                        disabled={isActivateSubmitting}
+                        disabled={isActivateSubmitting || isLoading}
                       >
                         <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
                         <span className="relative flex items-center justify-center gap-2">
-                          {isActivateSubmitting ? (
+                          {isActivateSubmitting || isLoading ? (
                             <>
                               <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                               Activating...
@@ -546,7 +615,7 @@ const SchoolLoginFormPage = () => {
                     {isLogin ? (
                       <>
                         <div className="mt-4 grid grid-cols-2 gap-2">
-                          {['admin', 'teacher', 'student', 'parent'].map((role) => (
+                          {['teacher', 'student', 'parent'].map((role) => (
                             <button
                               key={role}
                               type="button"
@@ -578,8 +647,8 @@ const SchoolLoginFormPage = () => {
                         </button>
                         <div className="mt-3 p-3 bg-purple-50 rounded-lg border border-purple-100">
                           <p className="text-xs text-purple-800 font-medium mb-1">Test Account:</p>
-                          <p className="text-xs text-purple-700">ID: {schoolId}-STUDENT-002</p>
-                          <p className="text-xs text-purple-700">Email: new@leclerc.edu.cm</p>
+                          <p className="text-xs text-purple-700">ID: {school?.code || schoolId}-STUDENT-002</p>
+                          <p className="text-xs text-purple-700">Email: newstudent@leclerc.edu.cm</p>
                         </div>
                       </div>
                     )}

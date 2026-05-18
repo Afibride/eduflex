@@ -1,201 +1,277 @@
-
+// contexts/AuthContext.jsx
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { authAPI, schoolAPI } from '../services/api';
 
-const AuthContext = createContext(null);
+const AuthContext = createContext();
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within AuthProvider');
+    throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
 };
 
-const DUMMY_SCHOOLS = [
-  { id: 'LECLERC-001', name: 'Lycée Général Leclerc', location: 'Yaoundé', email: 'leclerc@edu.cm', phone: '+237-123-4567', logo: 'LGL', color: 'teal' },
-  { id: 'VOGT-001', name: 'Collège Vogt', location: 'Douala', email: 'vogt@edu.cm', phone: '+237-234-5678', logo: 'CV', color: 'blue' },
-  { id: 'BIYEM-001', name: 'Lycée de Biyem-Assi', location: 'Yaoundé', email: 'biyem@edu.cm', phone: '+237-345-6789', logo: 'LBA', color: 'orange' },
-  { id: 'LIBERMANN-001', name: 'Collège Libermann', location: 'Douala', email: 'libermann@edu.cm', phone: '+237-456-7890', logo: 'CL', color: 'purple' },
-  { id: 'JOSS-001', name: 'Lycée Joss', location: 'Douala', email: 'joss@edu.cm', phone: '+237-567-8901', logo: 'LJ', color: 'green' },
-  { id: 'CCBD-001', name: 'Collège Catholique Bilingue de Douala', location: 'Douala', email: 'ccbd@edu.cm', phone: '+237-678-9012', logo: 'CCBD', color: 'teal' },
-  { id: 'BUEA-001', name: 'Lycée Buea', location: 'Buea', email: 'buea@edu.cm', phone: '+237-789-0123', logo: 'LB', color: 'blue' },
-  { id: 'MODERNE-001', name: 'Collège Moderne de Yaoundé', location: 'Yaoundé', email: 'moderne@edu.cm', phone: '+237-890-1234', logo: 'CMY', color: 'orange' },
-  { id: 'TECHNIQUE-001', name: 'Lycée Technique de Douala', location: 'Douala', email: 'technique@edu.cm', phone: '+237-901-2345', logo: 'LTD', color: 'purple' },
-  { id: 'LIMBE-001', name: "Collège d'Enseignement Général de Limbe", location: 'Limbe', email: 'limbe@edu.cm', phone: '+237-012-3456', logo: 'CEGL', color: 'green' }
-];
-
-const DUMMY_USERS = [
-  { id: 'LECLERC-001-ADMIN-001', schoolId: 'LECLERC-001', role: 'admin', name: 'Admin User', email: 'admin@leclerc.edu.cm', password: 'password123', active: true },
-  { id: 'LECLERC-001-TEACHER-001', schoolId: 'LECLERC-001', role: 'teacher', name: 'Teacher User', email: 'teacher@leclerc.edu.cm', password: 'password123', active: true },
-  { id: 'LECLERC-001-STUDENT-001', schoolId: 'LECLERC-001', role: 'student', name: 'Student User', email: 'student@leclerc.edu.cm', password: 'password123', active: true },
-  { id: 'LECLERC-001-PARENT-001', schoolId: 'LECLERC-001', role: 'parent', name: 'Parent User', email: 'parent@leclerc.edu.cm', password: 'password123', active: true },
-  { id: 'LECLERC-001-STUDENT-002', schoolId: 'LECLERC-001', role: 'student', name: 'New Student', email: 'new@leclerc.edu.cm', phone: '+237-111-2222', password: '', active: false }, // For activation
-];
-
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
   const [schools, setSchools] = useState([]);
-  const [selectedSchool, setSelectedSchool] = useState(null);
+  const [currentSchool, setCurrentSchool] = useState(null);
+  const [selectedSchool, setSelectedSchool] = useState(() => {
+    try {
+      const saved = localStorage.getItem('selected_school');
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      localStorage.removeItem('selected_school');
+      return null;
+    }
+  });
 
+  // Load schools on mount
   useEffect(() => {
-    if (!localStorage.getItem('eduflex_schools')) {
-      localStorage.setItem('eduflex_schools', JSON.stringify(DUMMY_SCHOOLS));
-    }
-    if (!localStorage.getItem('eduflex_users')) {
-      localStorage.setItem('eduflex_users', JSON.stringify(DUMMY_USERS));
-    }
-
-    const loadedSchools = JSON.parse(localStorage.getItem('eduflex_schools') || '[]');
-    setSchools(loadedSchools);
-
-    const savedSchoolId = localStorage.getItem('eduflex_selectedSchool');
-    if (savedSchoolId) {
-      const school = loadedSchools.find(s => s.id === savedSchoolId);
-      if (school) setSelectedSchool(school);
-    }
-
-    const currentUser = localStorage.getItem('eduflex_currentUser');
-    if (currentUser) {
-      try {
-        const userData = JSON.parse(currentUser);
-        setUser(userData);
-        setIsAuthenticated(true);
-        
-        if (userData.schoolId) {
-          const userSchool = loadedSchools.find(s => s.id === userData.schoolId);
-          if (userSchool) {
-            setSelectedSchool(userSchool);
-            localStorage.setItem('eduflex_selectedSchool', userSchool.id);
-          }
-        }
-      } catch (error) {
-        console.error('Error loading user data:', error);
-        localStorage.removeItem('eduflex_currentUser');
-      }
-    }
-    setLoading(false);
+    loadSchools();
   }, []);
 
-  const selectSchool = (schoolId) => {
-    const school = schools.find(s => s.id === schoolId);
-    if (school) {
-      setSelectedSchool(school);
-      localStorage.setItem('eduflex_selectedSchool', schoolId);
-      return true;
+  // Load user from token on mount
+  useEffect(() => {
+    const token = localStorage.getItem('auth_token');
+    const savedUser = localStorage.getItem('user');
+    
+    if (token && savedUser) {
+      setUser(JSON.parse(savedUser));
+      validateToken();
+    } else {
+      setLoading(false);
     }
-    return false;
+  }, []);
+
+  const loadSchools = async () => {
+    try {
+      const response = await schoolAPI.getAll();
+      console.log('Schools loaded:', response.data);
+      
+      // Handle different response formats
+      let schoolsData = response.data;
+      if (response.data && response.data.data) {
+        schoolsData = response.data.data;
+      }
+      
+      // Ensure schoolsData is an array
+      if (!Array.isArray(schoolsData)) {
+        console.error('Schools data is not an array:', schoolsData);
+        schoolsData = [];
+      }
+      
+      // Transform backend data to frontend format with consistent ID types
+      const transformedSchools = schoolsData.map(school => ({
+        id: Number(school.id), // Force to number for consistency
+        code: school.code || `SCH-${school.id}`,
+        name: school.name,
+        location: school.city || school.location || 'Cameroon',
+        region: school.region,
+        email: school.email,
+        phone: school.phone,
+        address: school.address,
+        city: school.city,
+        principal_name: school.principal_name,
+        website: school.website,
+        curriculum: school.curriculum,
+        status: school.status,
+        color: getSchoolColor(school.id),
+        logo: getInitials(school.name)
+      }));
+      
+      console.log('Transformed schools:', transformedSchools);
+      setSchools(transformedSchools);
+    } catch (error) {
+      console.error('Failed to load schools:', error);
+      // Fallback demo data with consistent number IDs
+      const fallbackSchools = [
+        { id: 1, name: 'Lycée Général Leclerc', code: 'LECLERC-001', location: 'Yaoundé', region: 'Centre', email: 'contact@leclerc.edu.cm', phone: '+237 222 123 456', color: 'blue', status: 'active' },
+        { id: 2, name: 'Collège Vogt', code: 'VOGT-001', location: 'Douala', region: 'Littoral', email: 'info@vogt.edu.cm', phone: '+237 233 456 789', color: 'green', status: 'active' },
+        { id: 3, name: 'Lycée de Biyem-Assi', code: 'BIYEM-001', location: 'Yaoundé', region: 'Centre', email: 'contact@biyemassi.edu.cm', phone: '+237 222 987 654', color: 'orange', status: 'active' },
+      ];
+      setSchools(fallbackSchools);
+    }
+  };
+
+  const getInitials = (name) => {
+    if (!name) return 'SC';
+    const words = name.split(' ');
+    if (words.length === 1) return name.substring(0, 2).toUpperCase();
+    return (words[0][0] + words[1][0]).toUpperCase();
+  };
+
+  const getSchoolColor = (id) => {
+    const colors = ['blue', 'green', 'purple', 'orange', 'teal', 'red', 'indigo', 'pink'];
+    const index = typeof id === 'number' ? id : parseInt(id) || 0;
+    return colors[index % colors.length];
+  };
+
+  const validateToken = async () => {
+    try {
+      const response = await authAPI.getMe();
+      setUser(response.data.user);
+      localStorage.setItem('user', JSON.stringify(response.data.user));
+    } catch (error) {
+      console.error('Token validation error:', error);
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('user');
+      setUser(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const login = async (email, password, schoolId = null) => {
+    try {
+      const normalizedSchoolId = schoolId ? Number(schoolId) : null;
+      const apiSchoolId = Number.isFinite(normalizedSchoolId) ? normalizedSchoolId : null;
+      
+      console.log('Login attempt with:', { email, schoolId: apiSchoolId });
+      
+      const response = await authAPI.login(email, password, apiSchoolId);
+      
+      if (response.data.success) {
+        localStorage.setItem('auth_token', response.data.token);
+        localStorage.setItem('user', JSON.stringify(response.data.user));
+        setUser(response.data.user);
+        
+        return { success: true, user: response.data.user };
+      }
+      
+      return { success: false, error: 'Login failed' };
+    } catch (error) {
+      console.error('Login error details:', error);
+      
+      if (error.response) {
+        const errorMessage = error.response.data?.error || 
+                           error.response.data?.message || 
+                           'Authentication failed';
+        return { success: false, error: errorMessage };
+      } else if (error.request) {
+        return { success: false, error: 'Cannot connect to server. Please check your connection.' };
+      } else {
+        return { success: false, error: error.message || 'An unexpected error occurred' };
+      }
+    }
+  };
+
+  const registerSchool = async (formData) => {
+    try {
+      const apiData = {
+        schoolName: formData.schoolName,
+        schoolType: formData.schoolType,
+        address: formData.address || '',
+        city: formData.city,
+        region: formData.region,
+        phone: formData.phone,
+        email: formData.email,
+        website: formData.website || '',
+        principalName: formData.principalName,
+        curriculum: formData.curriculum,
+        password: formData.password,
+      };
+      
+      const response = await authAPI.registerSchool(apiData);
+      
+      if (response.data.message) {
+        return { success: true, data: response.data };
+      }
+      
+      return { success: false, error: 'Registration failed' };
+    } catch (error) {
+      console.error('Registration error details:', error);
+      
+      if (error.response?.data?.errors) {
+        const errors = Object.values(error.response.data.errors).flat();
+        return { success: false, error: errors[0] };
+      }
+      
+      if (error.response?.data?.error) {
+        return { success: false, error: error.response.data.error };
+      }
+      
+      return { success: false, error: 'Network error. Please check your connection.' };
+    }
+  };
+
+  const activateAccount = async (userId, email, phone, password) => {
+    try {
+      const response = await authAPI.activateAccount(userId, email, password);
+      
+      if (response.data.success) {
+        return { success: true };
+      }
+      
+      return { success: false, error: 'Activation failed' };
+    } catch (error) {
+      console.error('Activation error:', error);
+      
+      if (error.response?.data?.error) {
+        return { success: false, error: error.response.data.error };
+      }
+      
+      if (error.response?.data?.errors) {
+        const errors = Object.values(error.response.data.errors).flat();
+        return { success: false, error: errors[0] };
+      }
+      
+      return { success: false, error: 'Activation failed. Please check your details.' };
+    }
+  };
+
+  const logout = async () => {
+    try {
+      await authAPI.logout();
+    } catch (error) {
+      console.error('Logout error:', error);
+    } finally {
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('user');
+      setUser(null);
+    }
+  };
+
+  const selectSchool = (schoolId) => {
+    const school = schools.find(s => Number(s.id) === Number(schoolId));
+    setCurrentSchool(school);
+    setSelectedSchool(school || null);
+    if (school) {
+      localStorage.setItem('selected_school', JSON.stringify(school));
+    }
+    return school;
   };
 
   const clearSelectedSchool = () => {
+    setCurrentSchool(null);
     setSelectedSchool(null);
-    localStorage.removeItem('eduflex_selectedSchool');
-  };
-
-  const registerUser = (userData) => {
-    const users = JSON.parse(localStorage.getItem('eduflex_users') || '[]');
-    
-    const roleUsers = users.filter(u => u.schoolId === userData.schoolId && u.role === userData.role);
-    const nextNum = String(roleUsers.length + 1).padStart(3, '0');
-    const newId = `${userData.schoolId}-${userData.role.toUpperCase()}-${nextNum}`;
-
-    const newUser = {
-      id: newId,
-      schoolId: userData.schoolId,
-      role: userData.role,
-      name: userData.name,
-      email: userData.email,
-      phone: userData.phone,
-      password: userData.password || '',
-      active: !!userData.password,
-      profilePicture: null
-    };
-
-    users.push(newUser);
-    localStorage.setItem('eduflex_users', JSON.stringify(users));
-
-    return { success: true, user: newUser };
-  };
-
-  const activateAccount = (id, email, phone, newPassword) => {
-    const users = JSON.parse(localStorage.getItem('eduflex_users') || '[]');
-    const userIndex = users.findIndex(u => u.id === id && (u.email === email || u.phone === phone));
-
-    if (userIndex !== -1) {
-      if (users[userIndex].active) {
-        return { success: false, error: 'Account is already active. Please login.' };
-      }
-
-      users[userIndex].password = newPassword;
-      users[userIndex].active = true;
-      localStorage.setItem('eduflex_users', JSON.stringify(users));
-      return { success: true };
-    }
-
-    return { success: false, error: 'Invalid ID, Email, or Phone combination.' };
-  };
-
-  const login = (email, password, schoolId) => {
-    const users = JSON.parse(localStorage.getItem('eduflex_users') || '[]');
-    const user = users.find(u => 
-      u.email === email && 
-      u.password === password && 
-      (schoolId ? u.schoolId === schoolId : true)
-    );
-
-    if (user) {
-      if (!user.active) {
-        return { success: false, error: 'Account not activated. Please activate your account first.' };
-      }
-      localStorage.setItem('eduflex_currentUser', JSON.stringify(user));
-      setUser(user);
-      setIsAuthenticated(true);
-      
-      selectSchool(user.schoolId);
-      
-      return { success: true, user };
-    }
-
-    return { success: false, error: 'Invalid email or password' };
-  };
-
-  const logout = () => {
-    localStorage.removeItem('eduflex_currentUser');
-    setUser(null);
-    setIsAuthenticated(false);
-  };
-
-  const updateProfile = (updatedData) => {
-    const users = JSON.parse(localStorage.getItem('eduflex_users') || '[]');
-    const userIndex = users.findIndex(u => u.id === user.id);
-
-    if (userIndex !== -1) {
-      users[userIndex] = { ...users[userIndex], ...updatedData };
-      localStorage.setItem('eduflex_users', JSON.stringify(users));
-      localStorage.setItem('eduflex_currentUser', JSON.stringify(users[userIndex]));
-      setUser(users[userIndex]);
-      return { success: true };
-    }
-
-    return { success: false, error: 'User not found' };
+    localStorage.removeItem('selected_school');
   };
 
   const value = {
     user,
-    isAuthenticated,
+    setUser,
     loading,
     schools,
+    currentSchool,
     selectedSchool,
+    login,
+    registerSchool,
+    activateAccount,
+    logout,
     selectSchool,
     clearSelectedSchool,
-    registerUser,
-    activateAccount,
-    login,
-    logout,
-    updateProfile
+    isAuthenticated: !!user,
+    isAdmin: user?.role === 'admin',
+    isTeacher: user?.role === 'teacher',
+    isStudent: user?.role === 'student',
+    isParent: user?.role === 'parent',
   };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+    </AuthContext.Provider>
+  );
 };

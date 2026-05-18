@@ -13,6 +13,7 @@ import HomePage from '@/pages/HomePage.jsx';
 import LoginPage from '@/pages/LoginPage.jsx';
 import SchoolLoginPage from '@/pages/SchoolLoginPage.jsx';
 import SchoolLoginFormPage from '@/pages/SchoolLoginFormPage.jsx';
+import SchoolsDirectoryPage from '@/pages/SchoolsDirectoryPage.jsx';
 import AccountActivationPage from '@/pages/AccountActivationPage.jsx';
 import RegisterPage from '@/pages/RegisterPage.jsx';
 import About from '@/pages/About.jsx';
@@ -27,9 +28,11 @@ import TeacherDashboard from '@/pages/TeacherDashboard.jsx';
 import StudentDashboard from '@/pages/StudentDashboard.jsx';
 import ParentDashboard from '@/pages/ParentDashboard.jsx';
 import ProfilePage from '@/pages/ProfilePage.jsx';
+import VideoClassesPage from '@/pages/VideoClassesPage.jsx';
 
 // Admin Pages
 import TeachersPage from '@/pages/admin/TeachersPage.jsx';
+import AdminClassesPage from '@/pages/admin/ClassesPage.jsx';
 import StudentsPage from '@/pages/admin/StudentsPage.jsx';
 import ParentsPage from '@/pages/admin/ParentsPage.jsx';
 import MarksVerificationPage from '@/pages/admin/MarksVerificationPage.jsx';
@@ -86,6 +89,7 @@ function App() {
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<PublicLayout><HomePage /></PublicLayout>} />
+          <Route path="/schools" element={<PublicLayout><SchoolsDirectoryPage /></PublicLayout>} />
           <Route path="/login" element={<PublicLayout><LoginPage /></PublicLayout>} />
           <Route path="/register" element={<PublicLayout><RegisterPage /></PublicLayout>} />
           <Route path="/about" element={<PublicLayout><About /></PublicLayout>} />
@@ -103,6 +107,7 @@ function App() {
           {/* Admin Routes */}
           <Route path="/admin-dashboard" element={<ProtectedRoute allowedRoles={['admin']}><AdminDashboard /></ProtectedRoute>} />
           <Route path="/admin/teachers" element={<ProtectedRoute allowedRoles={['admin']}><TeachersPage /></ProtectedRoute>} />
+          <Route path="/admin/classes" element={<ProtectedRoute allowedRoles={['admin']}><AdminClassesPage /></ProtectedRoute>} />
           <Route path="/admin/students" element={<ProtectedRoute allowedRoles={['admin']}><StudentsPage /></ProtectedRoute>} />
           <Route path="/admin/parents" element={<ProtectedRoute allowedRoles={['admin']}><ParentsPage /></ProtectedRoute>} />
           <Route path="/admin/marks" element={<ProtectedRoute allowedRoles={['admin']}><MarksVerificationPage /></ProtectedRoute>} />
@@ -143,6 +148,7 @@ function App() {
           
           {/* Common Routes */}
           <Route path="/profile" element={<ProtectedRoute allowedRoles={['admin', 'teacher', 'student', 'parent']}><ProfilePage /></ProtectedRoute>} />
+          <Route path="/video-classes" element={<ProtectedRoute allowedRoles={['teacher', 'student', 'parent']}><VideoClassesPage /></ProtectedRoute>} />
 
           {/* Catch-all redirect to home */}
           <Route path="*" element={<PublicLayout><HomePage /></PublicLayout>} />

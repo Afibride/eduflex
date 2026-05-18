@@ -21,7 +21,8 @@ import {
   School,
   Bell,
   Shield,
-  BarChart
+  BarChart,
+  Video
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -38,6 +39,7 @@ const Sidebar = ({ isOpen, onClose }) => {
         return [
           { icon: Home, label: 'Dashboard', path: '/admin-dashboard' },
           { icon: Users, label: 'Teachers', path: '/admin/teachers' },
+          { icon: BookOpen, label: 'Classes', path: '/admin/classes' },
           { icon: GraduationCap, label: 'Students', path: '/admin/students' },
           { icon: UserCircle, label: 'Parents', path: '/admin/parents' },
           { icon: CheckCircle, label: 'Marks Verification', path: '/admin/marks' },
@@ -57,6 +59,7 @@ const Sidebar = ({ isOpen, onClose }) => {
           { icon: ClipboardList, label: 'Attendance', path: '/teacher/attendance' },
           { icon: Calendar, label: 'Schedule', path: '/teacher/schedule' },
           { icon: Bell, label: 'Announcements', path: '/teacher/announcements' },
+          { icon: Video, label: 'Video Classes', path: '/video-classes' },
           { icon: User, label: 'Profile', path: '/profile' }
         ];
       case 'student':
@@ -69,6 +72,7 @@ const Sidebar = ({ isOpen, onClose }) => {
           { icon: ClipboardList, label: 'Timetable', path: '/student/timetable' },
           { icon: Download, label: 'Study Material', path: '/student/materials' },
           { icon: Bell, label: 'Announcements', path: '/student/announcements' },
+          { icon: Video, label: 'Video Classes', path: '/video-classes' },
           { icon: User, label: 'Profile', path: '/profile' }
         ];
       case 'parent':
@@ -80,6 +84,7 @@ const Sidebar = ({ isOpen, onClose }) => {
           { icon: Calendar, label: 'Attendance', path: '/parent/attendance' },
           { icon: FileText, label: 'Assignments', path: '/parent/assignments' },
           { icon: Bell, label: 'Announcements', path: '/parent/announcements' },
+          { icon: Video, label: 'Video Classes', path: '/video-classes' },
           { icon: TrendingUp, label: 'Performance', path: '/parent/performance' },
           { icon: User, label: 'Profile', path: '/profile' }
         ];
@@ -103,7 +108,7 @@ const Sidebar = ({ isOpen, onClose }) => {
       {/* Sidebar */}
       <aside
         className={cn(
-          'fixed left-0 top-16 z-40 h-[calc(100vh-4rem)] w-64 border-r bg-background transition-transform duration-300 md:translate-x-0',
+          'fixed left-0 top-20 z-40 h-[calc(100vh-5rem)] w-64 border-r bg-background transition-transform duration-300 md:translate-x-0',
           isOpen ? 'translate-x-0' : '-translate-x-full'
         )}
       >
@@ -119,7 +124,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                   <Button
                     variant={isActive ? 'secondary' : 'ghost'}
                     className={cn(
-                      'w-full justify-start mb-1',
+                      'w-full justify-start mb-1 whitespace-normal text-left',
                       isActive && 'bg-teal-100 text-teal-900 dark:bg-teal-900 dark:text-teal-100'
                     )}
                   >
