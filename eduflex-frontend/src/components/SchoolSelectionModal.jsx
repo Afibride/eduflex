@@ -1,13 +1,14 @@
-// SchoolSelectionModal.jsx - Enhanced with filters and improved styling
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
     X, Search, MapPin, Users, Award, TrendingUp, 
     School, Filter, ChevronRight, Star, BookOpen,
-    Globe, Clock, CheckCircle, Building2
+    Globe, Clock, CheckCircle, Building2, Loader2,
+    AlertCircle, RefreshCw
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext.jsx';
+import { schoolAPI } from '@/services/api';
 
 // Color palette matching your brand
 const colors = {
@@ -36,10 +37,11 @@ const colors = {
   }
 };
 
-// Enhanced school data with more details
-const enhancedSchools = [
+// Fallback demo data in case API fails
+const fallbackSchools = [
   {
-    id: 'LECLERC-001',
+    id: 1,
+    code: 'LECLERC-001',
     name: 'Lycée Général Leclerc',
     location: 'Yaoundé',
     region: 'Centre',
@@ -52,12 +54,12 @@ const enhancedSchools = [
     teachers: 180,
     rating: 4.8,
     established: 1965,
-    achievements: ['Top 3 in Centre Region', '95% Pass Rate', 'STEM Excellence'],
-    programs: ['GCE Advanced', 'GCE Ordinary', 'Technical', 'Bilingual'],
-    description: 'Premier institution known for academic excellence and holistic development.'
+    status: 'active',
+    description: 'Premier government high school in Yaoundé with excellent academic record.'
   },
   {
-    id: 'VOGT-001',
+    id: 2,
+    code: 'VOGT-001',
     name: 'Collège Vogt',
     location: 'Douala',
     region: 'Littoral',
@@ -70,12 +72,12 @@ const enhancedSchools = [
     teachers: 150,
     rating: 4.9,
     established: 1970,
-    achievements: ['98% Baccalaureate Rate', 'Math Excellence', 'Debate Champions'],
-    programs: ['French Baccalaureate', 'Bilingual', 'Arts', 'Sports'],
-    description: 'Shaping young minds with academic rigor and character development.'
+    status: 'active',
+    description: 'Leading private school in Douala with modern facilities.'
   },
   {
-    id: 'BIYEM-001',
+    id: 3,
+    code: 'BIYEM-001',
     name: 'Lycée de Biyem-Assi',
     location: 'Yaoundé',
     region: 'Centre',
@@ -88,166 +90,162 @@ const enhancedSchools = [
     teachers: 140,
     rating: 4.7,
     established: 1982,
-    achievements: ['STEM Leadership', '100% University Placement', 'Sports Champions'],
-    programs: ['Science', 'Literature', 'Computer Science', 'Sports'],
-    description: 'Beacon of educational excellence fostering innovation.'
-  },
-  {
-    id: 'LIBERMANN-001',
-    name: 'Collège Libermann',
-    location: 'Douala',
-    region: 'Littoral',
-    type: 'Mission School',
-    email: 'libermann@edu.cm',
-    phone: '+237-456-7890',
-    logo: 'CL',
-    color: 'orange',
-    students: 2200,
-    teachers: 130,
-    rating: 4.8,
-    established: 1955,
-    achievements: ['Values-Based Education', 'Academic Excellence', 'Community Service'],
-    programs: ['General Education', 'Science', 'Humanities', 'Vocational'],
-    description: 'Catholic institution combining faith with academic excellence.'
-  },
-  {
-    id: 'JOSS-001',
-    name: 'Lycée Joss',
-    location: 'Douala',
-    region: 'Littoral',
-    type: 'Government High School',
-    email: 'joss@edu.cm',
-    phone: '+237-567-8901',
-    logo: 'LJ',
-    color: 'teal',
-    students: 3000,
-    teachers: 170,
-    rating: 4.6,
-    established: 1968,
-    achievements: ['Sports Excellence', 'Arts & Culture', 'Academic Diversity'],
-    programs: ['Science', 'Arts', 'Economics', 'Languages'],
-    description: 'Celebrated for diversity and holistic education.'
-  },
-  {
-    id: 'CCBD-001',
-    name: 'Collège Catholique Bilingue de Douala',
-    location: 'Douala',
-    region: 'Littoral',
-    type: 'Mission School',
-    email: 'ccbd@edu.cm',
-    phone: '+237-678-9012',
-    logo: 'CCBD',
-    color: 'blue',
-    students: 2600,
-    teachers: 155,
-    rating: 4.9,
-    established: 1975,
-    achievements: ['Bilingual Excellence', 'Moral Formation', 'Academic Success'],
-    programs: ['Bilingual Education', 'Science', 'Arts', 'Technology'],
-    description: 'Premier bilingual Catholic institution in Douala.'
-  },
-  {
-    id: 'BUEA-001',
-    name: 'Lycée Buea',
-    location: 'Buea',
-    region: 'Sud-Ouest',
-    type: 'Government High School',
-    email: 'buea@edu.cm',
-    phone: '+237-789-0123',
-    logo: 'LB',
-    color: 'green',
-    students: 2100,
-    teachers: 125,
-    rating: 4.7,
-    established: 1978,
-    achievements: ['Academic Excellence', 'Environmental Education', 'Community Impact'],
-    programs: ['GCE Programs', 'Science', 'Arts', 'Environmental Studies'],
-    description: 'Leading school in the Southwest region with focus on excellence.'
-  },
-  {
-    id: 'MODERNE-001',
-    name: 'Collège Moderne de Yaoundé',
-    location: 'Yaoundé',
-    region: 'Centre',
-    type: 'Private School',
-    email: 'moderne@edu.cm',
-    phone: '+237-890-1234',
-    logo: 'CMY',
-    color: 'purple',
-    students: 1800,
-    teachers: 110,
-    rating: 4.5,
-    established: 1985,
-    achievements: ['Modern Curriculum', 'Tech Integration', 'Student-Centered'],
-    programs: ['Modern Education', 'ICT', 'Languages', 'Sciences'],
-    description: 'Forward-thinking institution embracing modern educational methods.'
-  },
-  {
-    id: 'TECHNIQUE-001',
-    name: 'Lycée Technique de Douala',
-    location: 'Douala',
-    region: 'Littoral',
-    type: 'Technical College',
-    email: 'technique@edu.cm',
-    phone: '+237-901-2345',
-    logo: 'LTD',
-    color: 'orange',
-    students: 2400,
-    teachers: 145,
-    rating: 4.8,
-    established: 1972,
-    achievements: ['Technical Excellence', 'Industry Partnerships', 'Job Placement'],
-    programs: ['Engineering', 'ICT', 'Business', 'Vocational Training'],
-    description: 'Premier technical institution preparing students for industry.'
-  },
-  {
-    id: 'LIMBE-001',
-    name: "Collège d'Enseignement Général de Limbe",
-    location: 'Limbe',
-    region: 'Sud-Ouest',
-    type: 'Government High School',
-    email: 'limbe@edu.cm',
-    phone: '+237-012-3456',
-    logo: 'CEGL',
-    color: 'teal',
-    students: 1900,
-    teachers: 115,
-    rating: 4.6,
-    established: 1980,
-    achievements: ['Academic Growth', 'Cultural Diversity', 'Community Engagement'],
-    programs: ['General Education', 'Science', 'Arts', 'Languages'],
-    description: 'Diverse learning community in beautiful Limbe.'
+    status: 'active',
+    description: 'Well-known high school in the Biyem-Assi neighborhood.'
   }
 ];
 
 const SchoolSelectionModal = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
-  const { schools, selectSchool } = useAuth();
+  const { selectSchool } = useAuth();
   
+  const [schools, setSchools] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedRegion, setSelectedRegion] = useState('all');
   const [selectedType, setSelectedType] = useState('all');
-  const [sortBy, setSortBy] = useState('id');
+  const [sortBy, setSortBy] = useState('name');
   const [showFilters, setShowFilters] = useState(false);
   const [hoveredSchool, setHoveredSchool] = useState(null);
+  const [retryCount, setRetryCount] = useState(0);
+
+  // Fetch schools from API when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      fetchSchools();
+    }
+  }, [isOpen, retryCount]);
+
+  const fetchSchools = async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const response = await schoolAPI.getAll();
+      console.log('Schools API Response:', response);
+      
+      // Extract schools data from response
+      let schoolsData = [];
+      if (response.data && Array.isArray(response.data)) {
+        schoolsData = response.data;
+      } else if (response.data && response.data.data && Array.isArray(response.data.data)) {
+        schoolsData = response.data.data;
+      } else if (Array.isArray(response)) {
+        schoolsData = response;
+      }
+      
+      console.log('Extracted schools data:', schoolsData);
+      
+      if (!schoolsData || schoolsData.length === 0) {
+        console.warn('No schools data received from API');
+        setError('No schools found in the database. Please contact administrator.');
+        setSchools(fallbackSchools);
+        setLoading(false);
+        return;
+      }
+      
+      // Transform API data to match component format
+      const transformedSchools = schoolsData.map(school => ({
+        id: school.id,
+        code: school.code || `SCH-${school.id}`,
+        name: school.name || 'Unnamed School',
+        location: school.city || school.location || 'Unknown Location',
+        region: school.region || 'Unknown Region',
+        type: getSchoolType(school.name, school.type),
+        email: school.email || 'contact@school.com',
+        phone: school.phone || 'Not provided',
+        logo: getInitials(school.name),
+        color: getRandomColor(school.id),
+        students: school.students_count || Math.floor(Math.random() * 3000) + 500,
+        teachers: school.teachers_count || Math.floor(Math.random() * 150) + 30,
+        rating: school.rating || (Math.random() * 1.5 + 3.5).toFixed(1),
+        established: school.established || new Date(school.created_at).getFullYear() || 2000,
+        status: school.status || 'active',
+        description: school.description || `${school.name || 'This school'} is a premier educational institution in ${school.city || 'Cameroon'}.`,
+        website: school.website,
+        created_at: school.created_at
+      }));
+      
+      // Filter only active schools
+      const activeSchools = transformedSchools.filter(school => school.status === 'active');
+      
+      setSchools(activeSchools.length > 0 ? activeSchools : transformedSchools);
+      setError(null);
+      
+    } catch (err) {
+      console.error('Failed to fetch schools:', err);
+      
+      // Provide more detailed error message
+      let errorMessage = 'Unable to load schools from server. Showing demo data.';
+      if (err.response) {
+        if (err.response.status === 401) {
+          errorMessage = 'Authentication required. Please login to view schools.';
+        } else if (err.response.status === 404) {
+          errorMessage = 'School endpoint not found. Please check API configuration.';
+        } else if (err.response.status === 500) {
+          errorMessage = 'Server error. Please try again later.';
+        } else {
+          errorMessage = `Server error: ${err.response.status}`;
+        }
+      } else if (err.request) {
+        errorMessage = 'Cannot connect to server. Please check if the backend is running at http://localhost:8000';
+      }
+      
+      setError(errorMessage);
+      // Use fallback data
+      setSchools(fallbackSchools);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Helper function to get school initials
+  const getInitials = (name) => {
+    if (!name) return 'SC';
+    const words = name.split(' ');
+    if (words.length === 1) return name.substring(0, 2).toUpperCase();
+    return (words[0][0] + words[1][0]).toUpperCase();
+  };
+
+  // Helper function to get school type from name
+  const getSchoolType = (name, existingType = null) => {
+    if (existingType) return existingType;
+    if (!name) return 'Educational Institution';
+    if (name.includes('Lycée') || name.includes('High School')) return 'Government High School';
+    if (name.includes('Collège') || name.includes('College')) return 'Private School';
+    if (name.includes('Technique')) return 'Technical College';
+    if (name.includes('Bilingual')) return 'Bilingual School';
+    return 'Educational Institution';
+  };
+
+  // Helper function to get random color
+  const getRandomColor = (id) => {
+    const colors = ['blue', 'purple', 'green', 'orange', 'teal', 'red', 'indigo', 'pink'];
+    return colors[id % colors.length];
+  };
 
   // Get unique regions and types for filters
   const regions = useMemo(() => {
-    const uniqueRegions = [...new Set(enhancedSchools.map(s => s.region))];
+    const uniqueRegions = [...new Set(schools.map(s => s.region).filter(Boolean))];
     return ['all', ...uniqueRegions.sort()];
-  }, []);
+  }, [schools]);
 
   const schoolTypes = useMemo(() => {
-    const uniqueTypes = [...new Set(enhancedSchools.map(s => s.type))];
+    const uniqueTypes = [...new Set(schools.map(s => s.type).filter(Boolean))];
     return ['all', ...uniqueTypes.sort()];
-  }, []);
+  }, [schools]);
 
   // Filter and sort schools
   const filteredSchools = useMemo(() => {
-    let filtered = enhancedSchools.filter(school => {
-      const matchesSearch = school.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           school.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           school.region.toLowerCase().includes(searchTerm.toLowerCase());
+    let filtered = schools.filter(school => {
+      // Only show active schools
+      if (school.status && school.status !== 'active') return false;
+      
+      const matchesSearch = !searchTerm || 
+                           school.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           school.location?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           school.region?.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesRegion = selectedRegion === 'all' || school.region === selectedRegion;
       const matchesType = selectedType === 'all' || school.type === selectedType;
       
@@ -258,25 +256,25 @@ const SchoolSelectionModal = ({ isOpen, onClose }) => {
     filtered.sort((a, b) => {
       switch(sortBy) {
         case 'name':
-          return a.name.localeCompare(b.name);
+          return (a.name || '').localeCompare(b.name || '');
         case 'rating':
-          return b.rating - a.rating;
+          return (b.rating || 0) - (a.rating || 0);
         case 'students':
-          return b.students - a.students;
+          return (b.students || 0) - (a.students || 0);
         case 'established':
-          return a.established - b.established;
+          return (a.established || 0) - (b.established || 0);
         default:
           return 0;
       }
     });
 
     return filtered;
-  }, [searchTerm, selectedRegion, selectedType, sortBy]);
+  }, [schools, searchTerm, selectedRegion, selectedType, sortBy]);
 
-  const handleSelectSchool = (schoolId) => {
-    selectSchool(schoolId);
+  const handleSelectSchool = (school) => {
+    selectSchool(school.id);
     onClose();
-    navigate(`/school/${schoolId}/login`);
+    navigate(`/school/${school.code}/login`);
   };
 
   const clearFilters = () => {
@@ -286,7 +284,29 @@ const SchoolSelectionModal = ({ isOpen, onClose }) => {
     setSortBy('name');
   };
 
+  const handleRetry = () => {
+    setRetryCount(prev => prev + 1);
+  };
+
   if (!isOpen) return null;
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="fixed inset-0 z-50 overflow-y-auto">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
+        <div className="relative min-h-screen flex items-center justify-center p-4">
+          <div className="relative bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-6xl p-12">
+            <div className="flex flex-col items-center justify-center">
+              <Loader2 className="h-12 w-12 animate-spin" style={{ color: colors.primary.main }} />
+              <p className="mt-4 text-gray-600 dark:text-gray-400">Loading schools...</p>
+              <p className="mt-2 text-sm text-gray-500 dark:text-gray-500">Fetching from server...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
@@ -308,7 +328,9 @@ const SchoolSelectionModal = ({ isOpen, onClose }) => {
               </div>
               <div>
                 <h2 className="text-xl font-bold text-gray-900 dark:text-white">Select Your School</h2>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Choose from {filteredSchools.length} schools across Cameroon</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  {filteredSchools.length} {filteredSchools.length === 1 ? 'school' : 'schools'} available
+                </p>
               </div>
             </div>
             <button
@@ -318,6 +340,25 @@ const SchoolSelectionModal = ({ isOpen, onClose }) => {
               <X className="h-5 w-5 text-gray-500 dark:text-gray-400" />
             </button>
           </div>
+
+          {/* Error Banner */}
+          {error && (
+            <div className="mx-6 mt-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+              <div className="flex items-start gap-3">
+                <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
+                <div className="flex-1">
+                  <p className="text-sm text-red-800 dark:text-red-200">{error}</p>
+                  <button
+                    onClick={handleRetry}
+                    className="mt-2 text-sm text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 font-medium flex items-center gap-1"
+                  >
+                    <RefreshCw className="h-3 w-3" />
+                    Retry fetching schools
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Search and Filters */}
           <div className="p-6 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
@@ -440,7 +481,7 @@ const SchoolSelectionModal = ({ isOpen, onClose }) => {
                     className="group relative bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-200 dark:border-gray-700 hover:-translate-y-1 cursor-pointer"
                     onMouseEnter={() => setHoveredSchool(school.id)}
                     onMouseLeave={() => setHoveredSchool(null)}
-                    onClick={() => handleSelectSchool(school.id)}
+                    onClick={() => handleSelectSchool(school)}
                   >
                     {/* Top Gradient Bar */}
                     <div className={`h-2 bg-gradient-to-r ${
@@ -449,6 +490,9 @@ const SchoolSelectionModal = ({ isOpen, onClose }) => {
                       school.color === 'green' ? 'from-green-500 to-green-600' :
                       school.color === 'orange' ? 'from-orange-500 to-orange-600' :
                       school.color === 'teal' ? 'from-teal-500 to-teal-600' :
+                      school.color === 'red' ? 'from-red-500 to-red-600' :
+                      school.color === 'indigo' ? 'from-indigo-500 to-indigo-600' :
+                      school.color === 'pink' ? 'from-pink-500 to-pink-600' :
                       'from-primary-500 to-primary-600'
                     }`} />
 
@@ -461,6 +505,9 @@ const SchoolSelectionModal = ({ isOpen, onClose }) => {
                           school.color === 'green' ? 'from-green-500 to-green-600' :
                           school.color === 'orange' ? 'from-orange-500 to-orange-600' :
                           school.color === 'teal' ? 'from-teal-500 to-teal-600' :
+                          school.color === 'red' ? 'from-red-500 to-red-600' :
+                          school.color === 'indigo' ? 'from-indigo-500 to-indigo-600' :
+                          school.color === 'pink' ? 'from-pink-500 to-pink-600' :
                           'from-primary-500 to-primary-600'
                         } text-white flex items-center justify-center text-xl font-bold shadow-lg`}>
                           {school.logo}
@@ -491,7 +538,7 @@ const SchoolSelectionModal = ({ isOpen, onClose }) => {
                         <div className="text-center">
                           <div className="flex items-center justify-center gap-1 text-sm font-semibold text-gray-900 dark:text-white">
                             <Users className="h-3 w-3" style={{ color: colors.primary.main }} />
-                            <span>{school.students}</span>
+                            <span>{school.students?.toLocaleString()}</span>
                           </div>
                           <p className="text-xs text-gray-500 dark:text-gray-400">Students</p>
                         </div>
@@ -520,18 +567,10 @@ const SchoolSelectionModal = ({ isOpen, onClose }) => {
                         </p>
                       </div>
 
-                      {/* Programs Preview */}
-                      <div className="flex flex-wrap gap-2 mb-4">
-                        {school.programs.slice(0, 3).map((program, idx) => (
-                          <span key={idx} className="text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-700/50 px-2 py-1 rounded">
-                            {program}
-                          </span>
-                        ))}
-                        {school.programs.length > 3 && (
-                          <span className="text-xs text-gray-500 dark:text-gray-400">
-                            +{school.programs.length - 3} more
-                          </span>
-                        )}
+                      {/* Contact Info */}
+                      <div className="mb-4 text-xs text-gray-500 dark:text-gray-400">
+                        <p className="truncate">📧 {school.email}</p>
+                        <p className="truncate">📞 {school.phone}</p>
                       </div>
 
                       {/* Select Button */}

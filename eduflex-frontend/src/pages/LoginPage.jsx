@@ -1,4 +1,3 @@
-// LoginPage.jsx - Fixed version
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
@@ -11,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { useAuth } from '@/contexts/AuthContext.jsx';
+import { useAuth } from '@/contexts/AuthContext';
 
 const loginSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
@@ -20,7 +19,7 @@ const loginSchema = z.object({
 
 const LoginPage = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, logout } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [selectedRole, setSelectedRole] = useState('admin');
 
@@ -34,23 +33,24 @@ const LoginPage = () => {
   });
 
   const onSubmit = async (data) => {
-    const result = login(data.email, data.password);
+    const result = await login(data.email, data.password);
 
     if (result.success) {
-      toast.success('Login successful! Redirecting to your dashboard...', {
+      if (result.user.role !== 'admin') {
+        await logout();
+        toast.error('Please use your school portal to login as staff, student, or parent.', {
+          duration: 4000
+        });
+        return;
+      }
+
+      toast.success('Admin login successful! Redirecting to your dashboard...', {
         duration: 3000,
         icon: <Sparkles className="text-green-500" />
       });
-      
-      const dashboardMap = {
-        admin: '/admin-dashboard',
-        teacher: '/teacher-dashboard',
-        student: '/student-dashboard',
-        parent: '/parent-dashboard'
-      };
-      
+
       setTimeout(() => {
-        navigate(dashboardMap[result.user.role] || '/');
+        navigate('/admin-dashboard');
       }, 1500);
     } else {
       toast.error(result.error || 'Invalid email or password', {
@@ -62,10 +62,7 @@ const LoginPage = () => {
   const fillDemoCredentials = (role) => {
     setSelectedRole(role);
     const credentials = {
-      admin: { email: 'admin@demo.edu', password: 'password123' },
-      teacher: { email: 'teacher@demo.edu', password: 'password123' },
-      student: { email: 'student@demo.edu', password: 'password123' },
-      parent: { email: 'parent@demo.edu', password: 'password123' }
+      admin: { email: 'admin@leclerc.edu.cm', password: 'password123' }
     };
     
     setValue('email', credentials[role].email);
@@ -103,8 +100,8 @@ const LoginPage = () => {
   return (
     <>
       <Helmet>
-        <title>Login - EduFlex Cameroon</title>
-        <meta name="description" content="Login to your EduFlex account to access your dashboard and manage your educational activities." />
+        <title>School Admin Login - EduFlex Cameroon</title>
+        <meta name="description" content="School administrators can login directly to manage their EduFlex school workspace." />
       </Helmet>
 
       <div className="min-h-screen flex items-center justify-center relative overflow-hidden"
@@ -141,18 +138,22 @@ const LoginPage = () => {
                   src="/eduflex.png" 
                   alt="EduFlex Logo" 
                   className="h-16 w-auto"
+                  onError={(e) => e.target.style.display = 'none'}
                 />
+                <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent ml-2">
+                  EduFlex Cameroon
+                </span>
               </div>
               
               <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-                Welcome Back to{' '}
+                School Admin Login
                 <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-green-600">
                   EduFlex Cameroon
                 </span>
               </h1>
               
               <p className="text-lg text-gray-600 mb-8 max-w-lg mx-auto lg:mx-0">
-                Access your personalized dashboard to manage students, track progress, and collaborate with your educational community.
+                School owners and administrators can login directly here. Teachers, students, and parents should use their selected school portal.
               </p>
 
               {/* Feature List */}
@@ -204,9 +205,9 @@ const LoginPage = () => {
                       <span className="text-white font-bold text-2xl">E</span>
                     </div>
                   </div>
-                  <CardTitle className="text-2xl text-center text-gray-900">Welcome back</CardTitle>
+                  <CardTitle className="text-2xl text-center text-gray-900">School Admin Login</CardTitle>
                   <CardDescription className="text-center text-gray-500">
-                    Enter your credentials to access your account
+                    Enter your school admin credentials
                   </CardDescription>
                 </CardHeader>
 
@@ -263,7 +264,17 @@ const LoginPage = () => {
                       )}
                     </div>
 
-                    <div className="flex items-center justify-end">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          id="remember"
+                          className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        />
+                        <label htmlFor="remember" className="text-sm text-gray-600">
+                          Remember me
+                        </label>
+                      </div>
                       <button
                         type="button"
                         className="text-sm text-blue-600 hover:text-blue-700 hover:underline"
@@ -309,7 +320,7 @@ const LoginPage = () => {
                     </div>
 
                     <div className="mt-4 grid grid-cols-2 gap-2">
-                      {['admin', 'teacher', 'student', 'parent'].map((role) => (
+                      {['admin'].map((role) => (
                         <button
                           key={role}
                           type="button"
@@ -327,7 +338,8 @@ const LoginPage = () => {
 
                     <div className="mt-3 p-3 bg-blue-50 rounded-lg border border-blue-100">
                       <p className="text-xs text-blue-800 font-medium mb-1">Quick Demo:</p>
-                      <p className="text-xs text-blue-700">Click any role above to auto-fill credentials</p>
+                      <p className="text-xs text-blue-700">Click admin above to auto-fill credentials</p>
+                      <p className="text-xs text-blue-600 mt-1">Demo email: admin@leclerc.edu.cm</p>
                     </div>
                   </div>
 
@@ -357,7 +369,6 @@ const LoginPage = () => {
         </div>
       </div>
 
-      {/* Animation styles */}
       <style>{`
         @keyframes float {
           0%, 100% { transform: translateY(0px) translateX(0px); }

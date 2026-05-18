@@ -25,6 +25,7 @@ import {
   Shield,
   GraduationCap,
 } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 const colors = {
   primary: {
@@ -52,19 +53,6 @@ const colors = {
     dark: "#7e22ce",
     50: "#faf5ff",
     100: "#f3e8ff",
-  },
-  neutral: {
-    white: "#ffffff",
-    50: "#f8fafc",
-    100: "#f1f5f9",
-    200: "#e2e8f0",
-    300: "#cbd5e1",
-    400: "#94a3b8",
-    500: "#64748b",
-    600: "#475569",
-    700: "#334155",
-    800: "#1e293b",
-    900: "#0f172a",
   },
 };
 
@@ -446,6 +434,7 @@ const SchoolRegistrationForm = ({
 
 const RegisterPage = () => {
   const navigate = useNavigate();
+  const { registerSchool } = useAuth();
 
   const [step, setStep] = useState(1);
   const [showPassword, setShowPassword] = useState(false);
@@ -519,39 +508,39 @@ const RegisterPage = () => {
     switch (step) {
       case 1:
         if (!schoolForm.schoolName || !schoolForm.schoolType || !schoolForm.region || !schoolForm.city) {
-          alert("Please fill in all required fields");
+          toast.error("Please fill in all required fields");
           return false;
         }
         break;
       case 2:
         if (!schoolForm.email || !schoolForm.phone || !schoolForm.principalName) {
-          alert("Please fill in all required fields");
+          toast.error("Please fill in all required fields");
           return false;
         }
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(schoolForm.email)) {
-          alert("Please enter a valid email address");
+          toast.error("Please enter a valid email address");
           return false;
         }
         break;
       case 3:
         if (schoolForm.curriculum.length === 0) {
-          alert("Please select at least one curriculum");
+          toast.error("Please select at least one curriculum");
           return false;
         }
         if (!schoolForm.password || !schoolForm.confirmPassword) {
-          alert("Please enter a password");
+          toast.error("Please enter a password");
           return false;
         }
         if (schoolForm.password.length < 8) {
-          alert("Password must be at least 8 characters long");
+          toast.error("Password must be at least 8 characters long");
           return false;
         }
         if (schoolForm.password !== schoolForm.confirmPassword) {
-          alert("Passwords do not match");
+          toast.error("Passwords do not match");
           return false;
         }
         if (!acceptTerms) {
-          alert("Please accept the Terms and Privacy Policy");
+          toast.error("Please accept the Terms and Privacy Policy");
           return false;
         }
         break;
@@ -579,19 +568,19 @@ const RegisterPage = () => {
     setIsLoading(true);
 
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      const result = await registerSchool(schoolForm);
 
-      console.log("REGISTER DATA", {
-        ...schoolForm,
-        password: "[REDACTED]",
-        confirmPassword: "[REDACTED]",
-      });
-
-      toast.success("Registration successful! Please check your email to activate your account.");
-      navigate("/login");
+      if (result.success) {
+        toast.success("Registration successful! Please check your email to activate your account.", {
+          duration: 5000,
+        });
+        navigate("/login");
+      } else {
+        toast.error(result.error || "Registration failed. Please try again.");
+      }
     } catch (error) {
       toast.error("Registration failed. Please try again.");
+      console.error(error);
     } finally {
       setIsLoading(false);
     }
@@ -637,7 +626,11 @@ const RegisterPage = () => {
                   src="/eduflex.png" 
                   alt="EduFlex Logo" 
                   className="h-16 w-auto"
+                  onError={(e) => e.target.style.display = 'none'}
                 />
+                <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent ml-2">
+                  EduFlex Cameroon
+                </span>
               </div>
               
               <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
@@ -810,7 +803,6 @@ const RegisterPage = () => {
         </div>
       </div>
 
-      {/* Animation styles */}
       <style>{`
         @keyframes float {
           0%, 100% { transform: translateY(0px) translateX(0px); }
