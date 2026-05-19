@@ -550,19 +550,23 @@ const HomePage = () => {
             <div className="mb-16 relative">
               <div className="absolute inset-0 bg-gradient-to-r from-blue-200/50 to-green-200/50 dark:from-blue-900/30 dark:to-green-900/30 rounded-3xl -m-4 blur-xl"></div>
               <div className="relative rounded-2xl overflow-hidden shadow-2xl">
-                <img 
-                  src={CAMEROON_SCHOOL_IMAGES[4]}
-                  alt="Students studying"
-                  className="w-full h-[300px] md:h-[400px] object-cover"
+                <iframe
+                  className="h-[300px] w-full md:h-[400px]"
+                  src="https://www.youtube.com/embed?listType=search&list=Lyc%C3%A9e%20G%C3%A9n%C3%A9ral%20Leclerc%20Yaound%C3%A9%20salle%20de%20classe%20intelligente"
+                  title="Lycée Général Leclerc Yaoundé smart classroom video"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/58 via-black/10 to-transparent dark:from-black/76"></div>
-                <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
-                  <h3 className="text-2xl font-bold mb-2 drop-shadow-lg">See EduFlex in Action</h3>
-                  <p className="text-white/90 drop-shadow">Watch how schools across Cameroon are transforming education</p>
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/78 via-black/20 to-transparent p-6 text-white md:p-8">
+                  <div className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-wide backdrop-blur">
+                    <Play className="h-3.5 w-3.5 fill-white" />
+                    Featured school video
+                  </div>
+                  <h3 className="mt-3 text-2xl font-bold mb-2 drop-shadow-lg">Lycée Général Leclerc, Yaoundé</h3>
+                  <p className="max-w-2xl text-white/90 drop-shadow">
+                    Watch one of Cameroon&apos;s landmark secondary schools as digital learning moves into the smart classroom era.
+                  </p>
                 </div>
-                <button className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-20 h-20 bg-white dark:bg-gray-800 rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition-transform hover:bg-blue-50 dark:hover:bg-gray-700">
-                  <Play className="w-8 h-8 ml-1" style={{ color: colors.primary.main }} />
-                </button>
               </div>
             </div>
 
