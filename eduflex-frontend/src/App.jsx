@@ -148,7 +148,7 @@ function App() {
           
           {/* Common Routes */}
           <Route path="/profile" element={<ProtectedRoute allowedRoles={['admin', 'teacher', 'student', 'parent']}><ProfilePage /></ProtectedRoute>} />
-          <Route path="/video-classes" element={<ProtectedRoute allowedRoles={['teacher', 'student', 'parent']}><VideoClassesPage /></ProtectedRoute>} />
+          <Route path="/video-classes" element={<ProtectedRoute allowedRoles={['admin', 'teacher', 'student', 'parent']}><VideoClassesPage /></ProtectedRoute>} />
 
           {/* Catch-all redirect to home */}
           <Route path="*" element={<PublicLayout><HomePage /></PublicLayout>} />

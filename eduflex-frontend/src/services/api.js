@@ -90,9 +90,14 @@ export const schoolAPI = {
     }
   },
   getById: (id) => api.get(`/schools/${id}`),
+  getPublicPosts: (id, params) => api.get(`/schools/${id}/posts`, { params }),
   getAdminSchools: (params) => api.get('/admin/schools', { params }),
   getAdminProfile: () => api.get('/admin/school/profile'),
   updateAdminProfile: (data) => api.put('/admin/school/profile', data),
+  getAdminPosts: (params) => api.get('/admin/school/posts', { params }),
+  createAdminPost: (data) => api.post('/admin/school/posts', data),
+  updateAdminPost: (id, data) => api.put(`/admin/school/posts/${id}`, data),
+  deleteAdminPost: (id) => api.delete(`/admin/school/posts/${id}`),
   getMyAnnouncements: (params) => api.get('/school/announcements', { params }),
   getDashboardStats: () => api.get('/school/dashboard'),
 };

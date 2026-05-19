@@ -119,10 +119,10 @@ const cameroonFeatures = [
 
 const CAMEROON_SCHOOL_IMAGES = [
   'https://commons.wikimedia.org/wiki/Special:FilePath/College%20Lerclerc%20Yaound%C3%A9.jpg',
-  'https://commons.wikimedia.org/wiki/Special:FilePath/Primary%20school%20in%20Ngoulmakong%20East%20Region%20Cameroon.jpg',
   'https://commons.wikimedia.org/wiki/Special:FilePath/College%20Vogt%20Yaound%C3%A9.jpg',
   'https://commons.wikimedia.org/wiki/Special:FilePath/Government%20Bilingual%20High%20School%20Deido.jpg',
   'https://commons.wikimedia.org/wiki/Special:FilePath/Lyc%C3%A9e%20Bilingue%20de%20Dschang.jpg',
+  'https://commons.wikimedia.org/wiki/Special:FilePath/Primary%20school%20in%20Ngoulmakong%20East%20Region%20Cameroon.jpg',
   'https://commons.wikimedia.org/wiki/Special:FilePath/SalleClasse.jpg',
   'https://commons.wikimedia.org/wiki/Special:FilePath/WikiChallenge%20African%20Schools%202021%20Cameroon%2005.jpg',
   'https://commons.wikimedia.org/wiki/Special:FilePath/I%20and%20my%20computer%20science%20students%20in%20class.jpg',

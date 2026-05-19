@@ -22,6 +22,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
+import { schoolAPI } from '@/services/api';
 
 const colors = {
   primary: '#2563eb',
@@ -38,18 +39,69 @@ const CAMEROON_SCHOOL_IMAGES = [
   'https://commons.wikimedia.org/wiki/Special:FilePath/Des%20consignes%20donn%C3%A9es%20aux%20%C3%A9l%C3%A8ves%20%C3%A0%20Mb%C3%B4%20%28Bandjoun%29.jpg',
 ];
 
+const getPaginatedItems = (payload) => {
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload?.data)) return payload.data;
+  if (Array.isArray(payload?.posts)) return payload.posts;
+  return [];
+};
+
+const formatPostDate = (post) => {
+  const rawDate = post?.published_at || post?.created_at;
+  if (!rawDate) return 'Latest';
+  return new Intl.DateTimeFormat('en', { month: 'short', day: 'numeric', year: 'numeric' }).format(new Date(rawDate));
+};
+
 const SchoolLoginPage = () => {
   const { schoolId } = useParams();
   const navigate = useNavigate();
   const { schools } = useAuth();
+  const [schoolDetails, setSchoolDetails] = React.useState(null);
+  const [stats, setStats] = React.useState(null);
+  const [posts, setPosts] = React.useState([]);
+  const [loadingDetails, setLoadingDetails] = React.useState(true);
 
   const school = React.useMemo(() => {
     const paramId = String(schoolId || '').toLowerCase();
-    return schools.find(s =>
+    return schoolDetails || schools.find(s =>
       String(s.id).toLowerCase() === paramId ||
       String(s.code || '').toLowerCase() === paramId
     ) || null;
-  }, [schools, schoolId]);
+  }, [schools, schoolDetails, schoolId]);
+
+  React.useEffect(() => {
+    let active = true;
+
+    const loadPublicSchoolPage = async () => {
+      setLoadingDetails(true);
+      try {
+        const [schoolResponse, postsResponse] = await Promise.all([
+          schoolAPI.getById(schoolId),
+          schoolAPI.getPublicPosts(schoolId, { per_page: 8 }),
+        ]);
+
+        if (!active) return;
+
+        setSchoolDetails(schoolResponse.data?.school || schoolResponse.data);
+        setStats(schoolResponse.data?.stats || null);
+        setPosts(getPaginatedItems(postsResponse.data));
+      } catch (error) {
+        if (!active) return;
+        setSchoolDetails(null);
+        setPosts([]);
+      } finally {
+        if (active) setLoadingDetails(false);
+      }
+    };
+
+    if (schoolId) {
+      loadPublicSchoolPage();
+    }
+
+    return () => {
+      active = false;
+    };
+  }, [schoolId]);
 
   const schoolRouteId = school?.code || schoolId;
   const schoolName = school?.name || 'Your School';
@@ -65,15 +117,25 @@ const SchoolLoginPage = () => {
     }
   }, [school]);
 
-  const featuredPost = {
+  const profileImage = school?.profile_image_url || school?.logo || CAMEROON_SCHOOL_IMAGES[0];
+  const coverImage = school?.cover_image_url || school?.profile_image_url || CAMEROON_SCHOOL_IMAGES[2];
+  const featuredSchoolPost = posts.find(post => post.is_featured) || posts[0];
+  const fallbackFeaturedPost = {
     category: 'Featured update',
     title: `Welcome to ${schoolName}`,
     summary: 'School administrators will publish news, highlights, events, and important information here for the school community.',
     date: 'Latest',
-    image: CAMEROON_SCHOOL_IMAGES[0],
+    image: profileImage,
   };
+  const featuredPost = featuredSchoolPost ? {
+    category: featuredSchoolPost.category || 'School update',
+    title: featuredSchoolPost.title,
+    summary: featuredSchoolPost.excerpt || featuredSchoolPost.content,
+    date: formatPostDate(featuredSchoolPost),
+    image: featuredSchoolPost.image_url || profileImage,
+  } : fallbackFeaturedPost;
 
-  const schoolPosts = [
+  const fallbackPosts = [
     {
       icon: Megaphone,
       category: 'Announcement',
@@ -96,8 +158,36 @@ const SchoolLoginPage = () => {
       color: colors.accent,
     },
   ];
+  const iconMap = {
+    news: Megaphone,
+    achievement: Trophy,
+    event: CalendarDays,
+    admissions: UserPlus,
+    community: Users,
+    general: Newspaper,
+  };
+  const colorMap = {
+    news: colors.primary,
+    achievement: colors.accent,
+    event: colors.secondary,
+    admissions: '#ea580c',
+    community: '#0f766e',
+    general: '#4f46e5',
+  };
+  const schoolPosts = posts
+    .filter(post => post.id !== featuredSchoolPost?.id)
+    .slice(0, 3)
+    .map((post) => ({
+      icon: iconMap[post.category] || Newspaper,
+      category: post.category || 'Update',
+      title: post.title,
+      text: post.excerpt || post.content,
+      color: colorMap[post.category] || colors.primary,
+      image: post.image_url || profileImage,
+    }));
+  const visiblePosts = schoolPosts.length ? schoolPosts : fallbackPosts;
 
-  if (schools.length === 0) {
+  if (loadingDetails && !school) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -138,7 +228,7 @@ const SchoolLoginPage = () => {
       <div className="min-h-screen bg-[#f6f8fb]">
         <section className="relative overflow-hidden bg-white">
           <img
-            src={CAMEROON_SCHOOL_IMAGES[2]}
+            src={coverImage}
             alt=""
             className="absolute inset-0 h-full w-full object-cover opacity-[0.28]"
           />
@@ -157,7 +247,9 @@ const SchoolLoginPage = () => {
               <div>
                 <div className="mb-6 flex items-center gap-4">
                   <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-600 to-green-600 text-3xl font-bold text-white shadow-xl ring-4 ring-white">
-                    {school.logo || school.name?.slice(0, 2).toUpperCase()}
+                    {profileImage ? (
+                      <img src={profileImage} alt={`${school.name} profile`} className="h-full w-full rounded-2xl object-cover" />
+                    ) : school.name?.slice(0, 2).toUpperCase()}
                   </div>
                   <div>
                     <p className="text-sm font-semibold uppercase tracking-wide text-blue-700">EduFlex School Portal</p>
@@ -186,12 +278,12 @@ const SchoolLoginPage = () => {
 
                 <div className="mt-8 grid max-w-2xl grid-cols-3 gap-3">
                   {[
-                    ['Students', '2,500+'],
-                    ['Teachers', '150+'],
-                    ['Pass Rate', '98%'],
+                    ['Students', stats?.students ?? school.students_count ?? ''],
+                    ['Teachers', stats?.teachers ?? school.teachers_count ?? ''],
+                    ['Classes', stats?.classes ?? school.classes_count ?? ''],
                   ].map(([label, value]) => (
                     <div key={label} className="rounded-xl bg-white/85 px-4 py-4 shadow-sm ring-1 ring-gray-200">
-                      <p className="text-2xl font-bold text-gray-950">{value}</p>
+                      <p className="text-2xl font-bold text-gray-950">{value || 'N/A'}</p>
                       <p className="mt-1 text-xs font-medium uppercase tracking-wide text-gray-500">{label}</p>
                     </div>
                   ))}
@@ -249,12 +341,13 @@ const SchoolLoginPage = () => {
             <Card className="border-0 bg-white shadow-sm ring-1 ring-gray-200">
               <CardContent className="p-6">
                 <img
-                  src={CAMEROON_SCHOOL_IMAGES[3]}
+                  src={profileImage}
                   alt={`${schoolName} campus profile`}
                   className="mb-5 h-44 w-full rounded-xl object-cover"
                 />
                 <p className="text-sm font-semibold uppercase tracking-wide text-blue-700">School profile</p>
                 <h2 className="mt-2 text-2xl font-bold text-gray-950">About {schoolName}</h2>
+                {school.about && <p className="mt-3 text-sm leading-6 text-gray-600">{school.about}</p>}
                 <div className="mt-5 space-y-4 text-sm text-gray-700">
                   <div className="rounded-xl bg-gray-50 p-4">
                     <p className="font-semibold text-gray-950">Principal</p>
@@ -352,7 +445,7 @@ const SchoolLoginPage = () => {
               </p>
             </div>
 
-            {schoolPosts.map(({ icon: Icon, category, title, text, color }, index) => (
+            {visiblePosts.map(({ icon: Icon, category, title, text, color, image }, index) => (
               <article key={title} className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-200 transition-shadow hover:shadow-md">
                 <div className="flex gap-4">
                   <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl" style={{ backgroundColor: `${color}18` }}>
@@ -365,7 +458,7 @@ const SchoolLoginPage = () => {
                   </div>
                 </div>
                 <img
-                  src={CAMEROON_SCHOOL_IMAGES[index + 3]}
+                  src={image || CAMEROON_SCHOOL_IMAGES[index + 3]}
                   alt={`${category} from ${schoolName}`}
                   className="mt-4 h-28 w-full rounded-xl object-cover"
                 />

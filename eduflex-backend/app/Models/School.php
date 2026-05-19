@@ -11,7 +11,8 @@ class School extends Model
 
     protected $fillable = [
         'name', 'code', 'email', 'phone', 'address', 'city', 'region',
-        'principal_name', 'website', 'curriculum', 'logo', 'color', 'status', 'verified_at'
+        'principal_name', 'website', 'about', 'curriculum', 'logo',
+        'profile_image_url', 'cover_image_url', 'color', 'status', 'verified_at'
     ];
 
     protected $casts = [
@@ -47,6 +48,11 @@ class School extends Model
     public function announcements()
     {
         return $this->hasMany(Announcement::class);
+    }
+
+    public function posts()
+    {
+        return $this->hasMany(SchoolPost::class);
     }
 
     public function settings()

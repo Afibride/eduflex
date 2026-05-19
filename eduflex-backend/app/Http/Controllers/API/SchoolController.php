@@ -15,7 +15,9 @@ class SchoolController extends Controller
 {
     public function index()
     {
-        $schools = School::where('status', 'active')->get();
+        $schools = School::withCount(['students', 'teachers', 'classes', 'posts'])
+            ->where('status', 'active')
+            ->get();
         return response()->json($schools);
     }
 
@@ -184,8 +186,11 @@ class SchoolController extends Controller
             'region' => ['nullable', 'string', 'max:100'],
             'principal_name' => ['nullable', 'string', 'max:255'],
             'website' => ['nullable', 'string', 'max:255'],
+            'about' => ['nullable', 'string'],
             'curriculum' => ['nullable', 'array'],
             'logo' => ['nullable', 'string'],
+            'profile_image_url' => ['nullable', 'string', 'max:500'],
+            'cover_image_url' => ['nullable', 'string', 'max:500'],
             'color' => ['nullable', 'string', 'max:50'],
             'status' => ['sometimes', 'in:active,inactive,pending'],
         ];

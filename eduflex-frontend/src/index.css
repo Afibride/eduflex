@@ -104,3 +104,67 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+@layer components {
+  .dashboard-content table {
+    white-space: nowrap;
+  }
+
+  .dashboard-content [data-stat-card] {
+    min-width: 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .dashboard-content {
+    font-size: 0.875rem;
+  }
+
+  .dashboard-content h1 {
+    font-size: 1.5rem;
+    line-height: 2rem;
+  }
+
+  .dashboard-content h2 {
+    font-size: 1.125rem;
+    line-height: 1.625rem;
+  }
+
+  .dashboard-content .space-y-6 > :not([hidden]) ~ :not([hidden]) {
+    margin-top: 1rem;
+  }
+
+  .dashboard-content .grid:has(> .rounded-xl.border [class*="text-3xl"]),
+  .dashboard-content .grid:has(> .rounded-xl.border [class*="text-4xl"]),
+  .dashboard-content .grid:has(> .rounded-xl.border svg) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.5rem;
+  }
+
+  .dashboard-content .rounded-xl.border {
+    border-radius: 0.5rem;
+  }
+
+  .dashboard-content .rounded-xl.border > div {
+    padding: 0.65rem;
+  }
+
+  .dashboard-content .rounded-xl.border > div + div {
+    padding-top: 0;
+  }
+
+  .dashboard-content .rounded-xl.border [class*="text-3xl"],
+  .dashboard-content .rounded-xl.border [class*="text-4xl"] {
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+  }
+
+  .dashboard-content .rounded-xl.border [class*="text-sm"] {
+    font-size: 0.7rem;
+    line-height: 1rem;
+  }
+
+  .dashboard-content button {
+    min-height: 2.25rem;
+  }
+}

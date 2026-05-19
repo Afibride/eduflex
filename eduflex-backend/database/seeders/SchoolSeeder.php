@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Classe;
 use App\Models\Parente;
 use App\Models\School;
+use App\Models\SchoolPost;
 use App\Models\Student;
 use App\Models\Teacher;
 use App\Models\User;
@@ -33,6 +34,10 @@ class SchoolSeeder extends Seeder
                 'region' => 'Centre',
                 'principal_name' => 'Dr. Jean Mbarga',
                 'website' => 'https://leclerc.cm',
+                'about' => 'A landmark public secondary school in Yaounde known for strong general education, science preparation, and civic leadership.',
+                'logo' => 'https://commons.wikimedia.org/wiki/Special:FilePath/College%20Lerclerc%20Yaound%C3%A9.jpg',
+                'profile_image_url' => 'https://commons.wikimedia.org/wiki/Special:FilePath/College%20Lerclerc%20Yaound%C3%A9.jpg',
+                'cover_image_url' => 'https://commons.wikimedia.org/wiki/Special:FilePath/College%20Lerclerc%20Yaound%C3%A9.jpg',
                 'curriculum' => ['GCE Ordinary Level', 'GCE Advanced Level', 'Baccalaureat'],
                 'color' => 'blue',
             ],
@@ -46,6 +51,10 @@ class SchoolSeeder extends Seeder
                 'region' => 'Centre',
                 'principal_name' => 'Rev. Fr. Michel Tchoumbou',
                 'website' => 'https://collegevogt.cm',
+                'about' => 'A respected Catholic secondary school in Mvolye, Yaounde, with a tradition of discipline, academic excellence, and student formation.',
+                'logo' => 'https://commons.wikimedia.org/wiki/Special:FilePath/College%20Vogt%20Yaound%C3%A9.jpg',
+                'profile_image_url' => 'https://commons.wikimedia.org/wiki/Special:FilePath/College%20Vogt%20Yaound%C3%A9.jpg',
+                'cover_image_url' => 'https://commons.wikimedia.org/wiki/Special:FilePath/College%20Vogt%20Yaound%C3%A9.jpg',
                 'curriculum' => ['General Secondary', 'Science', 'Arts'],
                 'color' => 'green',
             ],
@@ -59,6 +68,10 @@ class SchoolSeeder extends Seeder
                 'region' => 'South West',
                 'principal_name' => 'Mrs. Grace Njoh',
                 'website' => 'https://sakercollege.cm',
+                'about' => 'A leading girls secondary school in Limbe with a strong reputation for leadership, academics, and boarding-school community life.',
+                'logo' => 'https://commons.wikimedia.org/wiki/Special:FilePath/Government%20Bilingual%20High%20School%20Deido.jpg',
+                'profile_image_url' => 'https://commons.wikimedia.org/wiki/Special:FilePath/Government%20Bilingual%20High%20School%20Deido.jpg',
+                'cover_image_url' => 'https://commons.wikimedia.org/wiki/Special:FilePath/Government%20Bilingual%20High%20School%20Deido.jpg',
                 'curriculum' => ['GCE Ordinary Level', 'GCE Advanced Level'],
                 'color' => 'purple',
             ],
@@ -72,6 +85,10 @@ class SchoolSeeder extends Seeder
                 'region' => 'South West',
                 'principal_name' => 'Mr. Emmanuel Tanyi',
                 'website' => 'https://gbhsbuea.cm',
+                'about' => 'A major bilingual public secondary school serving learners in the South West with English and French subsystem programs.',
+                'logo' => 'https://commons.wikimedia.org/wiki/Special:FilePath/Government%20Bilingual%20High%20School%20Deido.jpg',
+                'profile_image_url' => 'https://commons.wikimedia.org/wiki/Special:FilePath/Government%20Bilingual%20High%20School%20Deido.jpg',
+                'cover_image_url' => 'https://commons.wikimedia.org/wiki/Special:FilePath/Government%20Bilingual%20High%20School%20Deido.jpg',
                 'curriculum' => ['English Subsystem', 'French Subsystem', 'GCE Advanced Level'],
                 'color' => 'teal',
             ],
@@ -85,6 +102,10 @@ class SchoolSeeder extends Seeder
                 'region' => 'Littoral',
                 'principal_name' => 'Rev. Fr. Andre Nlend',
                 'website' => 'https://libermann.cm',
+                'about' => 'A renowned Catholic secondary school in Douala with strong francophone academic programs and a long tradition of excellence.',
+                'logo' => 'https://commons.wikimedia.org/wiki/Special:FilePath/Lyc%C3%A9e%20Bilingue%20de%20Dschang.jpg',
+                'profile_image_url' => 'https://commons.wikimedia.org/wiki/Special:FilePath/Lyc%C3%A9e%20Bilingue%20de%20Dschang.jpg',
+                'cover_image_url' => 'https://commons.wikimedia.org/wiki/Special:FilePath/Lyc%C3%A9e%20Bilingue%20de%20Dschang.jpg',
                 'curriculum' => ['Francophone Secondary', 'Science', 'Literature'],
                 'color' => 'indigo',
             ],
@@ -98,6 +119,10 @@ class SchoolSeeder extends Seeder
                 'region' => 'East',
                 'principal_name' => 'Mme. Therese Essomba',
                 'website' => 'https://gpsngoulmakong.cm',
+                'about' => 'A primary school community focused on foundational literacy, numeracy, and inclusive learning in the East Region.',
+                'logo' => 'https://commons.wikimedia.org/wiki/Special:FilePath/Primary%20school%20in%20Ngoulmakong%20East%20Region%20Cameroon.jpg',
+                'profile_image_url' => 'https://commons.wikimedia.org/wiki/Special:FilePath/Primary%20school%20in%20Ngoulmakong%20East%20Region%20Cameroon.jpg',
+                'cover_image_url' => 'https://commons.wikimedia.org/wiki/Special:FilePath/Primary%20school%20in%20Ngoulmakong%20East%20Region%20Cameroon.jpg',
                 'curriculum' => ['Primary', 'First School Leaving Certificate'],
                 'color' => 'orange',
             ],
@@ -113,6 +138,45 @@ class SchoolSeeder extends Seeder
             );
 
             $this->seedUsersForSchool($school, $index + 1, $password);
+            $this->seedSchoolPosts($school);
+        }
+    }
+
+    private function seedSchoolPosts(School $school): void
+    {
+        $posts = [
+            [
+                'title' => 'Welcome to our EduFlex public portal',
+                'excerpt' => "{$school->name} now shares public school news, admissions notes, and achievements through EduFlex.",
+                'content' => "Families can use this page to learn about {$school->name}, follow school highlights, and access the secure portal for students, teachers, and parents.",
+                'category' => 'news',
+                'image_url' => $school->cover_image_url,
+                'is_featured' => true,
+            ],
+            [
+                'title' => 'Academic excellence and school life',
+                'excerpt' => 'Our learners continue to grow through classroom work, clubs, discipline, and community support.',
+                'content' => 'School administrators can replace this sample post with real stories about examination results, club activities, sports, science fairs, and public achievements.',
+                'category' => 'achievement',
+                'image_url' => $school->profile_image_url,
+                'is_featured' => false,
+            ],
+        ];
+
+        foreach ($posts as $post) {
+            SchoolPost::updateOrCreate(
+                [
+                    'school_id' => $school->id,
+                    'slug' => str($post['title'])->slug()->toString(),
+                ],
+                array_merge($post, [
+                    'school_id' => $school->id,
+                    'author_id' => User::where('school_id', $school->id)->where('role', 'admin')->value('id'),
+                    'slug' => str($post['title'])->slug()->toString(),
+                    'status' => 'published',
+                    'published_at' => now(),
+                ])
+            );
         }
     }
 
