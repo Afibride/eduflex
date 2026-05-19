@@ -46,6 +46,7 @@ const Sidebar = ({ isOpen, onClose }) => {
           { icon: School, label: 'Schools', path: '/admin/schools' },
           { icon: BarChart, label: 'Reports', path: '/admin/reports' },
           { icon: Bell, label: 'Announcements', path: '/admin/announcements' },
+          { icon: Video, label: 'Video Classes', path: '/video-classes' },
           { icon: Shield, label: 'Settings', path: '/admin/settings' },
           { icon: User, label: 'Profile', path: '/profile' }
         ];
