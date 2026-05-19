@@ -12,6 +12,7 @@ use App\Http\Controllers\API\GradeController;
 use App\Http\Controllers\API\AttendanceController;
 use App\Http\Controllers\API\DashboardController;
 use App\Http\Controllers\API\AnnouncementController;
+use App\Http\Controllers\API\SchoolPostController;
 use App\Http\Controllers\API\AdminReportController;
 use App\Http\Controllers\API\AdminSettingsController;
 use App\Http\Controllers\API\MarksVerificationController;
@@ -29,6 +30,7 @@ Route::post('/activate', [AuthController::class, 'activateAccount']);
 
 // Public school routes
 Route::get('/schools', [SchoolController::class, 'index']);
+Route::get('/schools/{id}/posts', [SchoolPostController::class, 'publicIndex']);
 Route::get('/schools/{id}/announcements', [SchoolController::class, 'announcements']);
 Route::get('/schools/{id}', [SchoolController::class, 'show']);
 
@@ -51,6 +53,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/admin/schools', [SchoolController::class, 'store']);
         Route::put('/admin/schools/{id}', [SchoolController::class, 'update']);
         Route::delete('/admin/schools/{id}', [SchoolController::class, 'destroy']);
+
+        // Public-facing school posts managed by school admins
+        Route::get('/admin/school/posts', [SchoolPostController::class, 'index']);
+        Route::post('/admin/school/posts', [SchoolPostController::class, 'store']);
+        Route::get('/admin/school/posts/{id}', [SchoolPostController::class, 'show']);
+        Route::put('/admin/school/posts/{id}', [SchoolPostController::class, 'update']);
+        Route::delete('/admin/school/posts/{id}', [SchoolPostController::class, 'destroy']);
 
         // Announcements
         Route::get('/announcements', [AnnouncementController::class, 'index']);
