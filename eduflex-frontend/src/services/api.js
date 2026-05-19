@@ -3,7 +3,12 @@ import axios from 'axios';
 
 const getDefaultApiUrl = () => {
   const { protocol, hostname } = window.location;
-  return `${protocol}//${hostname}:8000/api`;
+
+  if (hostname === 'localhost' || hostname === '127.0.0.1' || /^\d+\.\d+\.\d+\.\d+$/.test(hostname)) {
+    return `${protocol}//${hostname}:8000/api`;
+  }
+
+  return 'https://eduflex-1-mgqd.onrender.com/api';
 };
 
 const API_URL = import.meta.env.VITE_API_URL || getDefaultApiUrl();
