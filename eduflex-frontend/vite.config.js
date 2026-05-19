@@ -4,7 +4,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const backendUrl = process.env.VITE_BACKEND_URL || 'http://localhost:8000'
+const backendUrl = process.env.VITE_BACKEND_URL || process.env.VITE_API_URL?.replace(/\/api\/?$/, '') || 'https://eduflex-1-mgqd.onrender.com'
 
 // https://vitejs.dev/config/
 export default defineConfig({
