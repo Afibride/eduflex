@@ -186,6 +186,13 @@ const SchoolLoginPage = () => {
       image: post.image_url || profileImage,
     }));
   const visiblePosts = schoolPosts.length ? schoolPosts : fallbackPosts;
+  const goBack = () => {
+    if (window.history.length > 1) {
+      navigate(-1);
+    } else {
+      navigate('/schools');
+    }
+  };
 
   if (loadingDetails && !school) {
     return (
@@ -236,11 +243,9 @@ const SchoolLoginPage = () => {
           <div className="absolute inset-0 bg-[linear-gradient(120deg,rgba(255,255,255,0.82),rgba(255,255,255,0.68)_45%,rgba(255,255,255,0.80))]" />
 
           <div className="relative mx-auto max-w-6xl px-4 py-8 md:py-12">
-            <Button variant="ghost" asChild className="mb-8 text-gray-600 hover:bg-white/70">
-              <Link to="/">
+            <Button variant="ghost" onClick={goBack} className="mb-8 text-gray-600 hover:bg-white/70">
                 <ArrowLeft className="mr-2 h-4 w-4" />
-                Back to schools
-              </Link>
+                Back
             </Button>
 
             <div className="grid gap-8 lg:grid-cols-[minmax(0,1.2fr)_420px] lg:items-center">
@@ -276,6 +281,48 @@ const SchoolLoginPage = () => {
                   Explore school updates, announcements, and community highlights before accessing your EduFlex account.
                 </p>
 
+                <div className="mt-8 rounded-2xl bg-white/90 p-4 shadow-xl ring-1 ring-gray-200 backdrop-blur md:p-5">
+                  <p className="mb-3 text-sm font-semibold uppercase tracking-wide text-blue-700">Choose your login method</p>
+                  <div className="grid gap-3 sm:grid-cols-3">
+                    <Button
+                      className="h-14 justify-between rounded-xl px-4 text-sm font-semibold text-white shadow-lg sm:h-20 sm:flex-col sm:items-start sm:justify-center"
+                      style={{ background: `linear-gradient(135deg, ${colors.primary}, ${colors.secondary})` }}
+                      onClick={() => navigate(`/school/${schoolRouteId}/login-form?action=login`)}
+                    >
+                      <span className="inline-flex items-center">
+                        <LogIn className="mr-2 h-5 w-5" />
+                        Student/Staff
+                      </span>
+                      <ArrowRight className="h-5 w-5 sm:hidden" />
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="h-14 justify-between rounded-xl border-purple-200 bg-white px-4 text-sm font-semibold text-purple-700 hover:bg-purple-50 sm:h-20 sm:flex-col sm:items-start sm:justify-center"
+                      onClick={() => navigate(`/school/${schoolRouteId}/login-form?action=activate`)}
+                    >
+                      <span className="inline-flex items-center">
+                        <UserPlus className="mr-2 h-5 w-5" />
+                        Activate
+                      </span>
+                      <ArrowRight className="h-5 w-5 sm:hidden" />
+                    </Button>
+                    <Button
+                      variant="outline"
+                      asChild
+                      className="h-14 justify-between rounded-xl border-blue-100 bg-white px-4 text-sm font-semibold text-gray-700 hover:bg-blue-50 sm:h-20 sm:flex-col sm:items-start sm:justify-center"
+                    >
+                      <Link to={`/login?email=${encodeURIComponent(school.email || '')}`}>
+                        <span className="inline-flex items-center">
+                          <Shield className="mr-2 h-5 w-5 text-blue-600" />
+                          Admin Login
+                        </span>
+                        <ArrowRight className="h-5 w-5 sm:hidden" />
+                      </Link>
+                    </Button>
+                  </div>
+                  <p className="mt-3 text-sm text-blue-800">Accounts are managed by your school administrator.</p>
+                </div>
+
                 <div className="mt-8 grid max-w-2xl grid-cols-3 gap-3">
                   {[
                     ['Students', stats?.students ?? school.students_count ?? ''],
@@ -291,45 +338,14 @@ const SchoolLoginPage = () => {
               </div>
 
               <Card className="overflow-hidden border-0 bg-white/95 shadow-2xl ring-1 ring-gray-200">
-                <div className="h-2 bg-gradient-to-r from-blue-600 to-green-600" />
-                <CardHeader className="pb-4">
-                  <CardTitle className="text-2xl">Continue to Portal</CardTitle>
-                  <CardDescription className="text-base">
-                    Select the access option that matches your account.
-                  </CardDescription>
+                <img src={featuredPost.image} alt={`${schoolName} featured update`} className="h-48 w-full object-cover" />
+                <CardHeader>
+                  <CardDescription className="font-semibold uppercase tracking-wide text-green-700">{featuredPost.category}</CardDescription>
+                  <CardTitle className="text-2xl">{featuredPost.title}</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-3 pb-6">
-                  <Button
-                    className="h-14 w-full justify-between rounded-xl px-5 text-base font-semibold text-white shadow-lg"
-                    style={{ background: `linear-gradient(135deg, ${colors.primary}, ${colors.secondary})` }}
-                    onClick={() => navigate(`/school/${schoolRouteId}/login-form?action=login`)}
-                  >
-                    <span className="inline-flex items-center">
-                      <LogIn className="mr-3 h-5 w-5" />
-                      Login as Student or Staff
-                    </span>
-                    <ArrowRight className="h-5 w-5" />
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="h-14 w-full justify-between rounded-xl border-purple-200 px-5 text-base font-semibold text-purple-700 hover:bg-purple-50"
-                    onClick={() => navigate(`/school/${schoolRouteId}/login-form?action=activate`)}
-                  >
-                    <span className="inline-flex items-center">
-                      <UserPlus className="mr-3 h-5 w-5" />
-                      Activate Account
-                    </span>
-                    <ArrowRight className="h-5 w-5" />
-                  </Button>
-                  <Button variant="ghost" asChild className="h-12 w-full justify-start rounded-xl text-gray-600 hover:bg-gray-50">
-                    <Link to={`/login?email=${encodeURIComponent(school.email || '')}`}>
-                      <Shield className="mr-2 h-5 w-5" />
-                      School Admin Login
-                    </Link>
-                  </Button>
-                  <div className="rounded-xl bg-blue-50 px-4 py-3 text-sm text-blue-800">
-                    Accounts are managed by your school administrator.
-                  </div>
+                <CardContent>
+                  <p className="line-clamp-4 text-sm leading-6 text-gray-600">{featuredPost.summary}</p>
+                  <p className="mt-4 text-xs font-medium text-gray-500">{featuredPost.date}</p>
                 </CardContent>
               </Card>
             </div>

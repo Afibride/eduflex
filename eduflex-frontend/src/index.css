@@ -103,6 +103,23 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+
+  input,
+  textarea,
+  select,
+  [role="combobox"] {
+    color: #111827 !important;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: #6b7280 !important;
+  }
+
+  option {
+    color: #111827;
+    background: #ffffff;
+  }
 }
 
 @layer components {

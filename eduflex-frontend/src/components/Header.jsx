@@ -1,7 +1,7 @@
 // Header.jsx - Updated version
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Moon, Sun, Menu, LogOut, User, Building2, ArrowLeftRight } from 'lucide-react';
+import { Moon, Sun, Menu, LogOut, User, Building2, ArrowLeftRight, X, Home, School } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -34,6 +34,7 @@ const colors = {
 const Header = ({ onMenuClick }) => {
   const [theme, setTheme] = useState('light');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const { user, logout, selectedSchool, clearSelectedSchool } = useAuth();
   const navigate = useNavigate();
 
@@ -71,6 +72,14 @@ const Header = ({ onMenuClick }) => {
     clearSelectedSchool();
     navigate('/');
   };
+
+  const publicNavLinks = [
+    { label: 'Home', href: '/', icon: Home },
+    { label: 'Schools', href: '/schools', icon: School },
+    { label: 'Register School', href: '/register', icon: Building2 },
+  ];
+
+  const closeMobileNav = () => setIsMobileNavOpen(false);
 
   const getRoleBadgeColor = (role) => {
     const colors = {
@@ -198,13 +207,47 @@ const Header = ({ onMenuClick }) => {
                 variant="ghost"
                 size="icon"
                 className="md:hidden text-gray-700 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400"
-                onClick={() => setIsModalOpen(true)}
+                onClick={() => setIsMobileNavOpen((open) => !open)}
+                aria-expanded={isMobileNavOpen}
+                aria-label="Toggle navigation menu"
               >
-                <User className="h-6 w-6" />
+                {isMobileNavOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
               </Button>
             )}
           </div>
         </div>
+
+        {!user && isMobileNavOpen && (
+          <div className="border-t border-gray-200 bg-white px-4 py-4 shadow-lg dark:border-gray-800 dark:bg-gray-900 md:hidden">
+            <nav className="space-y-2">
+              {publicNavLinks.map(({ label, href, icon: Icon }) => (
+                <Link
+                  key={href}
+                  to={href}
+                  onClick={closeMobileNav}
+                  className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold text-gray-800 hover:bg-blue-50 hover:text-blue-700 dark:text-gray-100 dark:hover:bg-gray-800 dark:hover:text-blue-300"
+                >
+                  <Icon className="h-5 w-5" />
+                  {label}
+                </Link>
+              ))}
+              <button
+                type="button"
+                onClick={() => {
+                  closeMobileNav();
+                  setIsModalOpen(true);
+                }}
+                className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-bold text-white shadow-md"
+                style={{
+                  background: `linear-gradient(135deg, ${colors.primary.main} 0%, ${colors.secondary.main} 100%)`,
+                }}
+              >
+                <User className="h-5 w-5" />
+                Student/Staff Login
+              </button>
+            </nav>
+          </div>
+        )}
       </header>
 
       <SchoolSelectionModal 
