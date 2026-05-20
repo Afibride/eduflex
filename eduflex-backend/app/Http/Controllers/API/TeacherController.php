@@ -30,25 +30,14 @@ class TeacherController extends Controller
             'phone' => 'nullable|string',
             'date_of_birth' => 'nullable|date',
             'gender' => 'required|in:male,female',
-            'qualification' => 'nullable|string|max:255',
             'subjects' => 'nullable|array',
             'hire_date' => 'nullable|date',
             'status' => 'nullable|in:active,on_leave,resigned',
         ]);
 
         $school = $request->user()->school;
-        $teacherNumber = $school->code . '-TCH-' . str_pad(
-            Teacher::where('school_id', $school->id)->count() + 1,
-            4,
-            '0',
-            STR_PAD_LEFT
-        );
-        $userId = $school->code . '-TEACHER-' . str_pad(
-            User::where('school_id', $school->id)->where('role', 'teacher')->count() + 1,
-            3,
-            '0',
-            STR_PAD_LEFT
-        );
+        $teacherNumber = $this->nextTeacherNumber($school->id, $school->code);
+        $userId = $this->nextTeacherUserId($school->id, $school->code);
 
         $teacher = DB::transaction(function () use ($data, $school, $userId, $teacherNumber) {
             $user = User::create([
@@ -70,7 +59,6 @@ class TeacherController extends Controller
                 'last_name' => $data['last_name'],
                 'date_of_birth' => $data['date_of_birth'] ?? now()->subYears(25)->toDateString(),
                 'gender' => $data['gender'],
-                'qualification' => $data['qualification'] ?? 'Not specified',
                 'subjects' => $data['subjects'] ?? [],
                 'hire_date' => $data['hire_date'] ?? now()->toDateString(),
                 'status' => $data['status'] ?? 'active',
@@ -106,7 +94,6 @@ class TeacherController extends Controller
             'phone' => 'nullable|string',
             'date_of_birth' => 'sometimes|date',
             'gender' => 'sometimes|in:male,female',
-            'qualification' => 'nullable|string|max:255',
             'subjects' => 'nullable|array',
             'hire_date' => 'sometimes|date',
             'status' => 'sometimes|in:active,on_leave,resigned',
@@ -143,5 +130,29 @@ class TeacherController extends Controller
             'email' => $teacher->user->email,
             'is_active' => $teacher->user->is_active,
         ]);
+    }
+
+    private function nextTeacherNumber(int $schoolId, string $schoolCode): string
+    {
+        $next = Teacher::where('school_id', $schoolId)->count() + 1;
+
+        do {
+            $code = $schoolCode . '-TCH-' . str_pad($next, 4, '0', STR_PAD_LEFT);
+            $next++;
+        } while (Teacher::where('teacher_number', $code)->exists());
+
+        return $code;
+    }
+
+    private function nextTeacherUserId(int $schoolId, string $schoolCode): string
+    {
+        $next = User::where('school_id', $schoolId)->where('role', 'teacher')->count() + 1;
+
+        do {
+            $code = $schoolCode . '-TEACHER-' . str_pad($next, 3, '0', STR_PAD_LEFT);
+            $next++;
+        } while (User::where('user_id', $code)->exists());
+
+        return $code;
     }
 }
