@@ -7,7 +7,7 @@ import * as z from 'zod';
 import { Helmet } from 'react-helmet';
 import { toast } from 'sonner';
 import { 
-    Eye, EyeOff, Mail, Lock, ArrowRight, GraduationCap, 
+    Eye, EyeOff, Mail, Lock, ArrowRight, ArrowLeft, GraduationCap, 
     Shield, Sparkles, UserPlus, LogIn, School, Building2,
     MapPin, Phone, CheckCircle
 } from 'lucide-react';
@@ -205,6 +205,14 @@ const SchoolLoginFormPage = () => {
     setActivateValue('confirmPassword', 'password123');
   };
 
+  const goBack = () => {
+    if (window.history.length > 1) {
+      navigate(-1);
+    } else {
+      navigate(`/school/${schoolId}/login`);
+    }
+  };
+
   // Loading state
   if (schools.length === 0) {
     return (
@@ -271,6 +279,10 @@ const SchoolLoginFormPage = () => {
 
         {/* Main Content */}
         <div className="container max-w-6xl mx-auto px-4 relative z-10">
+          <Button variant="ghost" onClick={goBack} className="mb-6 text-gray-700 hover:bg-white/80 hover:text-blue-700">
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back
+          </Button>
           <div className="flex flex-col lg:flex-row items-center gap-8">
             {/* Left Side - School Branding and Info */}
             <div className="flex-1 text-center lg:text-left mb-8 lg:mb-0">

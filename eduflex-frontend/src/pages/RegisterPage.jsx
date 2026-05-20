@@ -65,13 +65,13 @@ const StepIndicator = ({ currentStep }) => {
   ];
 
   return (
-    <div className="mb-8">
-      <div className="flex items-center justify-between max-w-2xl mx-auto">
+    <div className="mb-6 sm:mb-8">
+      <div className="mx-auto flex max-w-2xl items-start justify-between gap-1 sm:items-center">
         {steps.map((step, index) => (
           <React.Fragment key={step.number}>
-            <div className="flex flex-col items-center">
+            <div className="flex min-w-0 flex-1 flex-col items-center">
               <div
-                className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold transition-all duration-300 ${
+                className={`flex h-9 w-9 items-center justify-center rounded-full text-sm font-semibold transition-all duration-300 sm:h-10 sm:w-10 sm:text-base ${
                   currentStep >= step.number
                     ? "bg-blue-600 text-white shadow-lg shadow-blue-200"
                     : "bg-gray-200 text-gray-600"
@@ -79,11 +79,11 @@ const StepIndicator = ({ currentStep }) => {
               >
                 {currentStep > step.number ? <Check size={18} /> : step.number}
               </div>
-              <span className="text-sm mt-2 text-gray-600">{step.label}</span>
+              <span className="mt-2 text-center text-[11px] font-medium leading-tight text-gray-600 sm:text-sm">{step.label}</span>
             </div>
             {index < steps.length - 1 && (
               <div
-                className={`h-1 flex-1 mx-2 rounded transition-all duration-300 ${
+                className={`mt-4 h-1 w-6 shrink-0 rounded transition-all duration-300 sm:mx-2 sm:w-auto sm:flex-1 ${
                   currentStep > step.number ? "bg-blue-600" : "bg-gray-200"
                 }`}
               />
@@ -103,7 +103,7 @@ const Step1SchoolInfo = ({ schoolForm, handleSchoolFormChange, schoolTypes, regi
         <Building2 size={20} className="text-blue-600" />
         School Information
       </h3>
-      <div className="grid md:grid-cols-2 gap-4">
+      <div className="grid gap-4 md:grid-cols-2">
         <div className="space-y-2">
           <label className="text-sm font-medium text-gray-700">School Name *</label>
           <div className="relative">
@@ -112,7 +112,7 @@ const Step1SchoolInfo = ({ schoolForm, handleSchoolFormChange, schoolTypes, regi
               value={schoolForm.schoolName}
               onChange={handleSchoolFormChange}
               placeholder="Enter school name"
-              className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-gray-50"
+              className="w-full rounded-xl border border-gray-200 bg-white py-3 pl-10 pr-4 text-gray-900 transition-all focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
             <Building2 size={18} className="absolute left-3 top-3.5 text-gray-400" />
@@ -125,7 +125,7 @@ const Step1SchoolInfo = ({ schoolForm, handleSchoolFormChange, schoolTypes, regi
             name="schoolType"
             value={schoolForm.schoolType}
             onChange={handleSchoolFormChange}
-            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-gray-50"
+            className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-900 transition-all focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           >
             <option value="">Select school type</option>
@@ -141,7 +141,7 @@ const Step1SchoolInfo = ({ schoolForm, handleSchoolFormChange, schoolTypes, regi
             name="region"
             value={schoolForm.region}
             onChange={handleSchoolFormChange}
-            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-gray-50"
+            className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-900 transition-all focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           >
             <option value="">Select region</option>
@@ -159,7 +159,7 @@ const Step1SchoolInfo = ({ schoolForm, handleSchoolFormChange, schoolTypes, regi
               value={schoolForm.city}
               onChange={handleSchoolFormChange}
               placeholder="Enter city"
-              className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-gray-50"
+              className="w-full rounded-xl border border-gray-200 bg-white py-3 pl-10 pr-4 text-gray-900 transition-all focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
             <MapPin size={18} className="absolute left-3 top-3.5 text-gray-400" />
@@ -173,7 +173,7 @@ const Step1SchoolInfo = ({ schoolForm, handleSchoolFormChange, schoolTypes, regi
             value={schoolForm.address}
             onChange={handleSchoolFormChange}
             placeholder="Enter full address"
-            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-gray-50"
+            className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-900 transition-all focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
       </div>
@@ -189,7 +189,7 @@ const Step2ContactDetails = ({ schoolForm, handleSchoolFormChange }) => {
         <Users size={20} className="text-blue-600" />
         Contact Details
       </h3>
-      <div className="grid md:grid-cols-2 gap-4">
+      <div className="grid gap-4 md:grid-cols-2">
         <div className="space-y-2">
           <label className="text-sm font-medium text-gray-700">School Email *</label>
           <div className="relative">
@@ -199,7 +199,7 @@ const Step2ContactDetails = ({ schoolForm, handleSchoolFormChange }) => {
               value={schoolForm.email}
               onChange={handleSchoolFormChange}
               placeholder="school@example.com"
-              className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-gray-50"
+              className="w-full rounded-xl border border-gray-200 bg-white py-3 pl-10 pr-4 text-gray-900 transition-all focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
             <Mail size={18} className="absolute left-3 top-3.5 text-gray-400" />
@@ -214,7 +214,7 @@ const Step2ContactDetails = ({ schoolForm, handleSchoolFormChange }) => {
               value={schoolForm.phone}
               onChange={handleSchoolFormChange}
               placeholder="+237 6XX XXX XXX"
-              className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-gray-50"
+              className="w-full rounded-xl border border-gray-200 bg-white py-3 pl-10 pr-4 text-gray-900 transition-all focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
             <Phone size={18} className="absolute left-3 top-3.5 text-gray-400" />
@@ -229,7 +229,7 @@ const Step2ContactDetails = ({ schoolForm, handleSchoolFormChange }) => {
               value={schoolForm.principalName}
               onChange={handleSchoolFormChange}
               placeholder="Full name of principal"
-              className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-gray-50"
+              className="w-full rounded-xl border border-gray-200 bg-white py-3 pl-10 pr-4 text-gray-900 transition-all focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
             <User size={18} className="absolute left-3 top-3.5 text-gray-400" />
@@ -244,7 +244,7 @@ const Step2ContactDetails = ({ schoolForm, handleSchoolFormChange }) => {
               value={schoolForm.website}
               onChange={handleSchoolFormChange}
               placeholder="www.yourschool.edu"
-              className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-gray-50"
+              className="w-full rounded-xl border border-gray-200 bg-white py-3 pl-10 pr-4 text-gray-900 transition-all focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <Globe size={18} className="absolute left-3 top-3.5 text-gray-400" />
           </div>
@@ -276,7 +276,7 @@ const Step3CurriculumSecurity = ({
 
       <div className="space-y-3">
         <label className="text-sm font-medium text-gray-700">Curriculum Offered *</label>
-        <div className="grid md:grid-cols-2 gap-3">
+        <div className="grid gap-3 sm:grid-cols-2">
           {curriculums.map((c) => (
             <button
               key={c}
@@ -313,7 +313,7 @@ const Step3CurriculumSecurity = ({
               value={schoolForm.password}
               onChange={handleSchoolFormChange}
               placeholder="Create a strong password"
-              className="w-full pl-10 pr-10 px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-gray-50"
+              className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 pl-10 pr-10 text-gray-900 transition-all focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
               minLength={8}
             />
@@ -338,7 +338,7 @@ const Step3CurriculumSecurity = ({
               value={schoolForm.confirmPassword}
               onChange={handleSchoolFormChange}
               placeholder="Re-enter your password"
-              className="w-full pl-10 pr-10 px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-gray-50"
+              className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 pl-10 pr-10 text-gray-900 transition-all focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
             <Lock size={18} className="absolute left-3 top-3.5 text-gray-400" />
@@ -586,6 +586,14 @@ const RegisterPage = () => {
     }
   };
 
+  const goBack = () => {
+    if (window.history.length > 1) {
+      navigate(-1);
+    } else {
+      navigate('/');
+    }
+  };
+
   return (
     <>
       <Helmet>
@@ -593,7 +601,7 @@ const RegisterPage = () => {
         <meta name="description" content="Register your school with EduFlex Cameroon and transform your educational management experience." />
       </Helmet>
 
-      <div className="min-h-screen flex items-center justify-center relative overflow-hidden py-12 px-4"
+      <div className="register-page relative flex min-h-screen items-center justify-center overflow-hidden px-3 py-6 sm:px-4 sm:py-10 lg:py-12"
         style={{
           background: `linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%)`
         }}>
@@ -617,35 +625,43 @@ const RegisterPage = () => {
             }} />
         </div>
 
-        <div className="max-w-6xl mx-auto relative z-10">
-          <div className="flex flex-col lg:flex-row items-center gap-8">
+        <div className="relative z-10 mx-auto w-full max-w-6xl">
+          <button
+            type="button"
+            onClick={goBack}
+            className="mb-5 inline-flex items-center gap-2 rounded-xl bg-white/85 px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm ring-1 ring-gray-200 transition hover:text-blue-700 hover:ring-blue-200"
+          >
+            <ArrowLeft size={16} />
+            Back
+          </button>
+          <div className="flex flex-col items-center gap-6 lg:flex-row lg:gap-8">
             {/* Left Side - Branding and Info */}
-            <div className="flex-1 text-center lg:text-left mb-8 lg:mb-0">
-              <div className="flex items-center justify-center lg:justify-start mb-6">
+            <div className="flex-1 text-center lg:mb-0 lg:text-left">
+              <div className="mb-4 flex items-center justify-center sm:mb-6 lg:justify-start">
                 <img 
                   src="/eduflex.png" 
                   alt="EduFlex Logo" 
-                  className="h-16 w-auto"
+                  className="h-11 w-auto sm:h-16"
                   onError={(e) => e.target.style.display = 'none'}
                 />
-                <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent ml-2">
+                <span className="ml-2 bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-xl font-bold text-transparent sm:text-2xl">
                   EduFlex Cameroon
                 </span>
               </div>
               
-              <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
+              <h1 className="mb-3 text-3xl font-bold leading-tight text-gray-900 sm:text-4xl lg:mb-4 lg:text-5xl">
                 Register Your{' '}
                 <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-green-600">
                   School with EduFlex
                 </span>
               </h1>
               
-              <p className="text-lg text-gray-600 mb-8 max-w-lg mx-auto lg:mx-0">
+              <p className="mx-auto mb-5 max-w-lg text-base leading-7 text-gray-600 sm:mb-8 sm:text-lg lg:mx-0">
                 Join thousands of schools across Cameroon that trust EduFlex for their educational management needs.
               </p>
 
               {/* Feature List */}
-              <div className="space-y-4 max-w-md mx-auto lg:mx-0">
+              <div className="mx-auto hidden max-w-md space-y-3 sm:block lg:mx-0 lg:space-y-4">
                 {[
                   { icon: GraduationCap, text: 'Complete school management solution', color: colors.primary.main },
                   { icon: Shield, text: 'Secure data protection & privacy', color: colors.secondary.main },
@@ -665,27 +681,27 @@ const RegisterPage = () => {
               </div>
 
               {/* Stats */}
-              <div className="flex gap-6 mt-8 justify-center lg:justify-start">
+              <div className="mt-5 grid grid-cols-3 gap-3 rounded-2xl bg-white/70 p-3 shadow-sm backdrop-blur sm:mt-8 sm:flex sm:gap-6 sm:bg-transparent sm:p-0 sm:shadow-none lg:justify-start">
                 <div>
-                  <div className="text-2xl font-bold text-gray-900">2,500+</div>
+                  <div className="text-xl font-bold text-gray-900 sm:text-2xl">2,500+</div>
                   <div className="text-xs text-gray-500">Schools</div>
                 </div>
                 <div>
-                  <div className="text-2xl font-bold text-gray-900">50K+</div>
+                  <div className="text-xl font-bold text-gray-900 sm:text-2xl">50K+</div>
                   <div className="text-xs text-gray-500">Active Users</div>
                 </div>
                 <div>
-                  <div className="text-2xl font-bold text-gray-900">98%</div>
+                  <div className="text-xl font-bold text-gray-900 sm:text-2xl">98%</div>
                   <div className="text-xs text-gray-500">Satisfaction</div>
                 </div>
               </div>
             </div>
 
             {/* Right Side - Registration Card */}
-            <div className="flex-1 w-full max-w-2xl">
+            <div className="w-full max-w-2xl flex-1">
               <div className="backdrop-blur-xl bg-white/90 border-0 shadow-2xl rounded-2xl overflow-hidden">
-                <div className="p-8">
-                  <div className="flex items-center justify-center mb-6">
+                <div className="p-4 sm:p-6 lg:p-8">
+                  <div className="mb-4 flex items-center justify-center sm:mb-6">
                     <div className="flex items-center justify-center w-16 h-16 rounded-2xl shadow-lg"
                       style={{
                         background: `linear-gradient(135deg, ${colors.primary.main}, ${colors.secondary.main})`
@@ -694,16 +710,16 @@ const RegisterPage = () => {
                     </div>
                   </div>
                   
-                  <h2 className="text-2xl font-bold text-center text-gray-900 mb-2">
+                  <h2 className="mb-2 text-center text-xl font-bold text-gray-900 sm:text-2xl">
                     Register Your School
                   </h2>
-                  <p className="text-center text-gray-500 mb-8">
+                  <p className="mb-6 text-center text-sm text-gray-500 sm:mb-8 sm:text-base">
                     Fill in the details below to get started
                   </p>
 
                   <StepIndicator currentStep={step} />
 
-                  <form onSubmit={handleSubmit} className="mt-8">
+                  <form onSubmit={handleSubmit} className="mt-6 sm:mt-8">
                     <SchoolRegistrationForm
                       step={step}
                       schoolForm={schoolForm}
@@ -721,12 +737,12 @@ const RegisterPage = () => {
                     />
 
                     {/* Navigation Buttons */}
-                    <div className="flex justify-between items-center mt-10 pt-6 border-t border-gray-100">
+                    <div className="mt-8 grid gap-3 border-t border-gray-100 pt-5 sm:mt-10 sm:grid-cols-[1fr_auto_1fr] sm:items-center sm:gap-4 sm:pt-6">
                       <button
                         type="button"
                         onClick={handlePrevious}
                         disabled={step === 1 || isLoading}
-                        className={`px-6 py-3 border-2 border-gray-200 rounded-xl flex items-center gap-2 transition-all bg-white ${
+                        className={`order-2 flex items-center justify-center gap-2 rounded-xl border-2 border-gray-200 bg-white px-5 py-3 text-gray-900 transition-all sm:order-1 ${
                           step === 1 || isLoading
                             ? "opacity-50 cursor-not-allowed"
                             : "hover:border-blue-600 hover:text-blue-600"
@@ -736,7 +752,7 @@ const RegisterPage = () => {
                         Previous
                       </button>
 
-                      <div className="text-sm text-gray-500">
+                      <div className="order-1 text-center text-sm text-gray-500 sm:order-2">
                         Step {step} of 3
                       </div>
 
@@ -745,7 +761,7 @@ const RegisterPage = () => {
                           type="button"
                           onClick={handleNext}
                           disabled={isLoading}
-                          className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl flex items-center gap-2 transition-all shadow-lg shadow-blue-200 hover:shadow-xl"
+                          className="order-3 flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-8 py-3 text-white shadow-lg shadow-blue-200 transition-all hover:bg-blue-700 hover:shadow-xl"
                         >
                           Next
                           <ChevronRight size={18} />
@@ -754,7 +770,7 @@ const RegisterPage = () => {
                         <button
                           type="submit"
                           disabled={isLoading || !acceptTerms}
-                          className={`px-8 py-3 text-white rounded-xl flex items-center gap-2 transition-all shadow-lg hover:shadow-xl relative overflow-hidden group ${
+                          className={`group order-3 relative flex items-center justify-center gap-2 overflow-hidden rounded-xl px-8 py-3 text-white shadow-lg transition-all hover:shadow-xl ${
                             isLoading ? "opacity-75 cursor-wait" : ""
                           }`}
                           style={{

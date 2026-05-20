@@ -1,9 +1,9 @@
 // App.jsx - Updated with all routes
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from '@/components/ui/sonner';
 import ScrollToTop from '@/components/ScrollToTop.jsx';
-import { AuthProvider } from '@/contexts/AuthContext.jsx';
+import { AuthProvider, useAuth } from '@/contexts/AuthContext.jsx';
 import ProtectedRoute from '@/components/ProtectedRoute.jsx';
 import Header from '@/components/Header.jsx';
 import Footer from '@/components/Footer.jsx';
@@ -81,6 +81,34 @@ const PublicLayout = ({ children }) => {
   );
 };
 
+const dashboardMap = {
+  admin: '/admin-dashboard',
+  teacher: '/teacher-dashboard',
+  student: '/student-dashboard',
+  parent: '/parent-dashboard',
+};
+
+const HomeRoute = () => {
+  const { isAuthenticated, user, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-center">
+          <div className="mx-auto h-12 w-12 animate-spin rounded-full border-b-2 border-primary" />
+          <p className="mt-4 text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (isAuthenticated) {
+    return <Navigate to={dashboardMap[user?.role] || '/login'} replace />;
+  }
+
+  return <PublicLayout><HomePage /></PublicLayout>;
+};
+
 function App() {
   return (
     <AuthProvider>
@@ -88,7 +116,7 @@ function App() {
         <ScrollToTop />
         <Routes>
           {/* Public Routes */}
-          <Route path="/" element={<PublicLayout><HomePage /></PublicLayout>} />
+          <Route path="/" element={<HomeRoute />} />
           <Route path="/schools" element={<PublicLayout><SchoolsDirectoryPage /></PublicLayout>} />
           <Route path="/login" element={<PublicLayout><LoginPage /></PublicLayout>} />
           <Route path="/register" element={<PublicLayout><RegisterPage /></PublicLayout>} />

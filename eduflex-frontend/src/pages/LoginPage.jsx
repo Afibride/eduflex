@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Helmet } from 'react-helmet';
 import { toast } from 'sonner';
-import { Eye, EyeOff, Mail, Lock, ArrowRight, GraduationCap, Shield, Sparkles } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, ArrowRight, ArrowLeft, GraduationCap, Shield, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -105,6 +105,14 @@ const LoginPage = () => {
     }
   };
 
+  const goBack = () => {
+    if (window.history.length > 1) {
+      navigate(-1);
+    } else {
+      navigate('/');
+    }
+  };
+
   return (
     <>
       <Helmet>
@@ -138,6 +146,10 @@ const LoginPage = () => {
 
         {/* Main Content */}
         <div className="container max-w-6xl mx-auto px-4 relative z-10">
+          <Button variant="ghost" onClick={goBack} className="mb-6 text-gray-700 hover:bg-white/80 hover:text-blue-700">
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back
+          </Button>
           <div className="flex flex-col lg:flex-row items-center gap-8">
             {/* Left Side - Branding and Info */}
             <div className="flex-1 text-center lg:text-left mb-8 lg:mb-0">
