@@ -9,7 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import DashboardLayout from '@/components/DashboardLayout.jsx';
-import { teacherAPI } from '@/services/api';
+import { classAPI, teacherAPI } from '@/services/api';
 import { toast } from 'sonner';
 
 const emptyForm = {
@@ -19,10 +19,12 @@ const emptyForm = {
   phone: '',
   gender: 'male',
   subjects: '',
+  class_ids: [],
 };
 
 const TeachersPage = () => {
   const [teachers, setTeachers] = useState([]);
+  const [classes, setClasses] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [form, setForm] = useState(emptyForm);
@@ -33,8 +35,12 @@ const TeachersPage = () => {
   const loadTeachers = async () => {
     setLoading(true);
     try {
-      const response = await teacherAPI.getAll();
-      setTeachers(response.data.data || response.data || []);
+      const [teachersResponse, classesResponse] = await Promise.all([
+        teacherAPI.getAll(),
+        classAPI.getAll({ per_page: 100 }),
+      ]);
+      setTeachers(teachersResponse.data.data || teachersResponse.data || []);
+      setClasses(classesResponse.data.data || classesResponse.data || []);
     } catch (error) {
       toast.error(error.response?.data?.error || 'Failed to load teachers');
     } finally {
@@ -71,6 +77,20 @@ const TeachersPage = () => {
       setSaving(false);
     }
   };
+
+  const toggleClass = (classId) => {
+    setForm((current) => {
+      const exists = current.class_ids.includes(classId);
+      return {
+        ...current,
+        class_ids: exists
+          ? current.class_ids.filter(id => id !== classId)
+          : [...current.class_ids, classId],
+      };
+    });
+  };
+
+  const getTeacherClasses = (teacher) => teacher.teaching_classes || teacher.teachingClasses || [];
 
   const handleDelete = async (teacher) => {
     try {
@@ -126,6 +146,28 @@ const TeachersPage = () => {
                     </div>
                     <div className="space-y-2"><Label>Subjects</Label><Input placeholder="Mathematics, Physics" value={form.subjects} onChange={e => setForm({ ...form, subjects: e.target.value })} /></div>
                   </div>
+                  <div className="space-y-2">
+                    <Label>Classes to Teach</Label>
+                    <div className="max-h-44 overflow-y-auto rounded-xl border border-gray-200 bg-white p-3">
+                      {classes.length ? (
+                        <div className="grid gap-2 sm:grid-cols-2">
+                          {classes.map((schoolClass) => (
+                            <label key={schoolClass.id} className="flex cursor-pointer items-center gap-2 rounded-lg border border-gray-100 px-3 py-2 text-sm text-gray-800 hover:bg-blue-50">
+                              <input
+                                type="checkbox"
+                                checked={form.class_ids.includes(schoolClass.id)}
+                                onChange={() => toggleClass(schoolClass.id)}
+                                className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                              />
+                              <span>{schoolClass.full_name || `${schoolClass.name}${schoolClass.section ? ` ${schoolClass.section}` : ''}`}</span>
+                            </label>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-sm text-gray-500">No classes found. Create classes first, then assign them here.</p>
+                      )}
+                    </div>
+                  </div>
                   <DialogFooter><Button type="submit" disabled={saving}>{saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Create Teacher</Button></DialogFooter>
                 </form>
               )}
@@ -143,7 +185,7 @@ const TeachersPage = () => {
           <CardContent>
             {loading ? <p className="py-8 text-center text-muted-foreground">Loading teachers...</p> : (
               <Table>
-                <TableHeader><TableRow><TableHead>Activation Code</TableHead><TableHead>Name</TableHead><TableHead>Email</TableHead><TableHead>Phone</TableHead><TableHead>Subjects</TableHead><TableHead>Actions</TableHead></TableRow></TableHeader>
+                <TableHeader><TableRow><TableHead>Activation Code</TableHead><TableHead>Name</TableHead><TableHead>Email</TableHead><TableHead>Phone</TableHead><TableHead>Subjects</TableHead><TableHead>Classes</TableHead><TableHead>Actions</TableHead></TableRow></TableHeader>
                 <TableBody>
                   {filteredTeachers.map(teacher => (
                     <TableRow key={teacher.id}>
@@ -152,6 +194,11 @@ const TeachersPage = () => {
                       <TableCell>{teacher.user?.email}</TableCell>
                       <TableCell>{teacher.user?.phone || '-'}</TableCell>
                       <TableCell>{Array.isArray(teacher.subjects) ? teacher.subjects.join(', ') : '-'}</TableCell>
+                      <TableCell>
+                        {getTeacherClasses(teacher).length
+                          ? getTeacherClasses(teacher).map(item => item.full_name || item.name).join(', ')
+                          : '-'}
+                      </TableCell>
                       <TableCell><div className="flex gap-2"><Button variant="outline" size="sm"><Mail className="h-4 w-4" /></Button><Button variant="outline" size="sm" onClick={() => handleDelete(teacher)}><Trash2 className="h-4 w-4 text-red-500" /></Button></div></TableCell>
                     </TableRow>
                   ))}

@@ -37,6 +37,12 @@ class Teacher extends Model
         return $this->hasMany(Classe::class, 'homeroom_teacher_id');
     }
 
+    public function teachingClasses()
+    {
+        return $this->belongsToMany(Classe::class, 'class_teacher', 'teacher_id', 'class_id')
+            ->withTimestamps();
+    }
+
     public function getFullNameAttribute()
     {
         return "{$this->first_name} {$this->last_name}";

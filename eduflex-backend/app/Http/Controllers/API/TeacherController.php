@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Models\Classe;
 use App\Models\Teacher;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -14,7 +15,7 @@ class TeacherController extends Controller
 {
     public function index(Request $request)
     {
-        $teachers = Teacher::with(['user', 'homeroomClasses'])
+        $teachers = Teacher::with(['user', 'homeroomClasses', 'teachingClasses'])
             ->where('school_id', $request->user()->school_id)
             ->paginate(20);
 
@@ -31,11 +32,14 @@ class TeacherController extends Controller
             'date_of_birth' => 'nullable|date',
             'gender' => 'required|in:male,female',
             'subjects' => 'nullable|array',
+            'class_ids' => 'nullable|array',
+            'class_ids.*' => 'integer|exists:classes,id',
             'hire_date' => 'nullable|date',
             'status' => 'nullable|in:active,on_leave,resigned',
         ]);
 
         $school = $request->user()->school;
+        $classIds = $this->validClassIds($school->id, $data['class_ids'] ?? []);
         $teacherNumber = $this->nextTeacherNumber($school->id, $school->code);
         $userId = $this->nextTeacherUserId($school->id, $school->code);
 
@@ -63,6 +67,8 @@ class TeacherController extends Controller
                 'hire_date' => $data['hire_date'] ?? now()->toDateString(),
                 'status' => $data['status'] ?? 'active',
             ]);
+
+            $teacher->teachingClasses()->sync($classIds);
         } catch (Throwable $exception) {
             $user->delete();
             throw $exception;
@@ -70,7 +76,7 @@ class TeacherController extends Controller
 
         return response()->json([
             'message' => 'Teacher created successfully',
-            'teacher' => $teacher->load('user'),
+            'teacher' => $teacher->load(['user', 'teachingClasses']),
             'user_id' => $userId,
             'activation_code' => $userId,
         ], 201);
@@ -79,7 +85,7 @@ class TeacherController extends Controller
     public function show(Request $request, $id)
     {
         return response()->json(
-            Teacher::with(['user', 'homeroomClasses'])
+            Teacher::with(['user', 'homeroomClasses', 'teachingClasses'])
                 ->where('school_id', $request->user()->school_id)
                 ->findOrFail($id)
         );
@@ -98,9 +104,16 @@ class TeacherController extends Controller
             'date_of_birth' => 'sometimes|date',
             'gender' => 'sometimes|in:male,female',
             'subjects' => 'nullable|array',
+            'class_ids' => 'nullable|array',
+            'class_ids.*' => 'integer|exists:classes,id',
             'hire_date' => 'sometimes|date',
             'status' => 'sometimes|in:active,on_leave,resigned',
         ]);
+
+        if (array_key_exists('class_ids', $data)) {
+            $teacher->teachingClasses()->sync($this->validClassIds($request->user()->school_id, $data['class_ids'] ?? []));
+            unset($data['class_ids']);
+        }
 
         $teacher->update($data);
         $teacher->user->update([
@@ -109,7 +122,7 @@ class TeacherController extends Controller
             'phone' => $data['phone'] ?? $teacher->user->phone,
         ]);
 
-        return response()->json(['message' => 'Teacher updated successfully', 'teacher' => $teacher->fresh('user')]);
+        return response()->json(['message' => 'Teacher updated successfully', 'teacher' => $teacher->fresh(['user', 'teachingClasses'])]);
     }
 
     public function destroy(Request $request, $id)
@@ -157,5 +170,21 @@ class TeacherController extends Controller
         } while (User::where('user_id', $code)->exists());
 
         return $code;
+    }
+
+    private function validClassIds(int $schoolId, array $classIds): array
+    {
+        if (empty($classIds)) {
+            return [];
+        }
+
+        $validClassIds = Classe::where('school_id', $schoolId)
+            ->whereIn('id', $classIds)
+            ->pluck('id')
+            ->all();
+
+        abort_if(count($validClassIds) !== count(array_unique($classIds)), 422, 'One or more selected classes do not belong to your school.');
+
+        return $validClassIds;
     }
 }
