@@ -27,6 +27,12 @@ class Classe extends Model
         return $this->belongsTo(Teacher::class, 'homeroom_teacher_id');
     }
 
+    public function teachers()
+    {
+        return $this->belongsToMany(Teacher::class, 'class_teacher', 'class_id', 'teacher_id')
+            ->withTimestamps();
+    }
+
     public function students()
     {
         return $this->hasMany(Student::class, 'class_id');
