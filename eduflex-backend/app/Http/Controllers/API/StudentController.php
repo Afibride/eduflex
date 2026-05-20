@@ -9,9 +9,9 @@ use App\Models\Grade;
 use App\Models\Attendance;
 use App\Models\Classe;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Throwable;
 
 class StudentController extends Controller
 {
@@ -42,21 +42,21 @@ class StudentController extends Controller
         Classe::where('school_id', $schoolId)->findOrFail($request->class_id);
         $schoolCode = $request->user()->school->code;
 
-        [$student, $userId] = DB::transaction(function () use ($request, $schoolId, $schoolCode) {
-            $studentNumber = $schoolCode . '-STD-' . str_pad(Student::where('school_id', $schoolId)->count() + 1, 4, '0', STR_PAD_LEFT);
-            $userId = $schoolCode . '-STUDENT-' . str_pad(User::where('school_id', $schoolId)->where('role', 'student')->count() + 1, 3, '0', STR_PAD_LEFT);
+        $studentNumber = $this->nextStudentNumber($schoolId, $schoolCode);
+        $userId = $this->nextStudentUserId($schoolId, $schoolCode);
 
-            $user = User::create([
-                'school_id' => $schoolId,
-                'name' => $request->first_name . ' ' . $request->last_name,
-                'email' => $request->email,
-                'phone' => $request->parent_phone,
-                'user_id' => $userId,
-                'role' => 'student',
-                'password' => Hash::make(Str::random(16)),
-                'is_active' => false,
-            ]);
+        $user = User::create([
+            'school_id' => $schoolId,
+            'name' => $request->first_name . ' ' . $request->last_name,
+            'email' => $request->email,
+            'phone' => $request->parent_phone,
+            'user_id' => $userId,
+            'role' => 'student',
+            'password' => Hash::make(Str::random(16)),
+            'is_active' => false,
+        ]);
 
+        try {
             $student = Student::create([
                 'user_id' => $user->id,
                 'school_id' => $schoolId,
@@ -70,9 +70,10 @@ class StudentController extends Controller
                 'parent_email' => $request->parent_email,
                 'enrollment_date' => now(),
             ]);
-
-            return [$student, $userId];
-        });
+        } catch (Throwable $exception) {
+            $user->delete();
+            throw $exception;
+        }
         
         return response()->json([
             'message' => 'Student created successfully',
@@ -191,5 +192,29 @@ class StudentController extends Controller
             'email' => $student->user->email,
             'is_active' => $student->user->is_active,
         ]);
+    }
+
+    private function nextStudentNumber(int $schoolId, string $schoolCode): string
+    {
+        $next = Student::where('school_id', $schoolId)->count() + 1;
+
+        do {
+            $code = $schoolCode . '-STD-' . str_pad($next, 4, '0', STR_PAD_LEFT);
+            $next++;
+        } while (Student::where('student_number', $code)->exists());
+
+        return $code;
+    }
+
+    private function nextStudentUserId(int $schoolId, string $schoolCode): string
+    {
+        $next = User::where('school_id', $schoolId)->where('role', 'student')->count() + 1;
+
+        do {
+            $code = $schoolCode . '-STUDENT-' . str_pad($next, 3, '0', STR_PAD_LEFT);
+            $next++;
+        } while (User::where('user_id', $code)->exists());
+
+        return $code;
     }
 }
