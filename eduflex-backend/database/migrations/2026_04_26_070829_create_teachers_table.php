@@ -17,7 +17,6 @@ return new class extends Migration
             $table->string('last_name');
             $table->date('date_of_birth');
             $table->enum('gender', ['male', 'female']);
-            $table->string('qualification');
             $table->json('subjects')->nullable();
             $table->date('hire_date');
             $table->enum('status', ['active', 'on_leave', 'resigned'])->default('active');

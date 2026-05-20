@@ -253,7 +253,6 @@ class SchoolSeeder extends Seeder
                 'last_name' => (string) $index,
                 'date_of_birth' => '1984-09-12',
                 'gender' => $index % 2 === 0 ? 'female' : 'male',
-                'qualification' => 'Bachelor of Education',
                 'subjects' => ['Mathematics', 'English Language'],
                 'hire_date' => '2021-09-01',
                 'status' => 'active',

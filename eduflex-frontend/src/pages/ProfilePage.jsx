@@ -40,7 +40,6 @@ const ProfilePage = () => {
       employeeId: 'TCH-2024-001',
       department: 'Science',
       subjects: ['Mathematics', 'Physics'],
-      qualification: 'M.Sc. Mathematics',
       experience: '8 years',
       joiningDate: '2020-08-15'
     }),
@@ -284,10 +283,6 @@ const ProfilePage = () => {
                       <div className="space-y-2">
                         <Label>Subjects</Label>
                         <p className="text-gray-900 dark:text-white">{profileData.subjects.join(', ')}</p>
-                      </div>
-                      <div className="space-y-2">
-                        <Label>Qualification</Label>
-                        <p className="text-gray-900 dark:text-white">{profileData.qualification}</p>
                       </div>
                       <div className="space-y-2">
                         <Label>Experience</Label>

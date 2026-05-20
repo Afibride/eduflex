@@ -18,7 +18,6 @@ const emptyForm = {
   email: '',
   phone: '',
   gender: 'male',
-  qualification: '',
   subjects: '',
 };
 
@@ -117,7 +116,7 @@ const TeachersPage = () => {
                     <div className="space-y-2"><Label>Email</Label><Input type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} required /></div>
                     <div className="space-y-2"><Label>Phone</Label><Input value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} /></div>
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                     <div className="space-y-2">
                       <Label>Gender</Label>
                       <Select value={form.gender} onValueChange={gender => setForm({ ...form, gender })}>
@@ -125,9 +124,8 @@ const TeachersPage = () => {
                         <SelectContent><SelectItem value="male">Male</SelectItem><SelectItem value="female">Female</SelectItem></SelectContent>
                       </Select>
                     </div>
-                    <div className="space-y-2"><Label>Qualification</Label><Input value={form.qualification} onChange={e => setForm({ ...form, qualification: e.target.value })} /></div>
+                    <div className="space-y-2"><Label>Subjects</Label><Input placeholder="Mathematics, Physics" value={form.subjects} onChange={e => setForm({ ...form, subjects: e.target.value })} /></div>
                   </div>
-                  <div className="space-y-2"><Label>Subjects</Label><Input placeholder="Mathematics, Physics" value={form.subjects} onChange={e => setForm({ ...form, subjects: e.target.value })} /></div>
                   <DialogFooter><Button type="submit" disabled={saving}>{saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Create Teacher</Button></DialogFooter>
                 </form>
               )}
