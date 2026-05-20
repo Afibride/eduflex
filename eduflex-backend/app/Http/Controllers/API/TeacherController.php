@@ -6,9 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Teacher;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Throwable;
 
 class TeacherController extends Controller
 {
@@ -39,19 +39,19 @@ class TeacherController extends Controller
         $teacherNumber = $this->nextTeacherNumber($school->id, $school->code);
         $userId = $this->nextTeacherUserId($school->id, $school->code);
 
-        $teacher = DB::transaction(function () use ($data, $school, $userId, $teacherNumber) {
-            $user = User::create([
-                'school_id' => $school->id,
-                'name' => $data['first_name'] . ' ' . $data['last_name'],
-                'email' => $data['email'],
-                'phone' => $data['phone'] ?? null,
-                'user_id' => $userId,
-                'role' => 'teacher',
-                'password' => Hash::make(Str::random(16)),
-                'is_active' => false,
-            ]);
+        $user = User::create([
+            'school_id' => $school->id,
+            'name' => $data['first_name'] . ' ' . $data['last_name'],
+            'email' => $data['email'],
+            'phone' => $data['phone'] ?? null,
+            'user_id' => $userId,
+            'role' => 'teacher',
+            'password' => Hash::make(Str::random(16)),
+            'is_active' => false,
+        ]);
 
-            return Teacher::create([
+        try {
+            $teacher = Teacher::create([
                 'user_id' => $user->id,
                 'school_id' => $school->id,
                 'teacher_number' => $teacherNumber,
@@ -63,7 +63,10 @@ class TeacherController extends Controller
                 'hire_date' => $data['hire_date'] ?? now()->toDateString(),
                 'status' => $data['status'] ?? 'active',
             ]);
-        });
+        } catch (Throwable $exception) {
+            $user->delete();
+            throw $exception;
+        }
 
         return response()->json([
             'message' => 'Teacher created successfully',

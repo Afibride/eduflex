@@ -9,10 +9,10 @@ use App\Models\Student;
 use App\Models\Attendance;
 use App\Models\Grade;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Throwable;
 
 class ParentController extends Controller
 {
@@ -65,34 +65,21 @@ class ParentController extends Controller
             }
         }
 
-        // Generate parent number
-        $parentNumber = $schoolCode . '-PAR-' . str_pad(
-            Parente::where('school_id', $schoolId)->count() + 1, 
-            4, 
-            '0', 
-            STR_PAD_LEFT
-        );
+        $parentNumber = $this->nextParentNumber($schoolId, $schoolCode);
+        $userId = $this->nextParentUserId($schoolId, $schoolCode);
 
-        // Generate user ID
-        $userId = $schoolCode . '-PARENT-' . str_pad(
-            User::where('school_id', $schoolId)->where('role', 'parent')->count() + 1, 
-            3, 
-            '0', 
-            STR_PAD_LEFT
-        );
+        $user = User::create([
+            'school_id' => $schoolId,
+            'name' => $request->first_name . ' ' . $request->last_name,
+            'email' => $request->email,
+            'phone' => $request->phone,
+            'user_id' => $userId,
+            'role' => 'parent',
+            'password' => Hash::make(Str::random(16)),
+            'is_active' => false,
+        ]);
 
-        $parent = DB::transaction(function () use ($request, $schoolId, $userId, $parentNumber) {
-            $user = User::create([
-                'school_id' => $schoolId,
-                'name' => $request->first_name . ' ' . $request->last_name,
-                'email' => $request->email,
-                'phone' => $request->phone,
-                'user_id' => $userId,
-                'role' => 'parent',
-                'password' => Hash::make(Str::random(16)),
-                'is_active' => false,
-            ]);
-
+        try {
             $parent = Parente::create([
                 'user_id' => $user->id,
                 'school_id' => $schoolId,
@@ -111,9 +98,10 @@ class ParentController extends Controller
                     $parent->students()->attach($studentId, ['relationship' => $relationship]);
                 }
             }
-
-            return $parent;
-        });
+        } catch (Throwable $exception) {
+            $user->delete();
+            throw $exception;
+        }
 
         return response()->json([
             'message' => 'Parent created successfully',
@@ -355,5 +343,29 @@ class ParentController extends Controller
             'email' => $parent->user->email,
             'is_active' => $parent->user->is_active,
         ]);
+    }
+
+    private function nextParentNumber(int $schoolId, string $schoolCode): string
+    {
+        $next = Parente::where('school_id', $schoolId)->count() + 1;
+
+        do {
+            $code = $schoolCode . '-PAR-' . str_pad($next, 4, '0', STR_PAD_LEFT);
+            $next++;
+        } while (Parente::where('parent_number', $code)->exists());
+
+        return $code;
+    }
+
+    private function nextParentUserId(int $schoolId, string $schoolCode): string
+    {
+        $next = User::where('school_id', $schoolId)->where('role', 'parent')->count() + 1;
+
+        do {
+            $code = $schoolCode . '-PARENT-' . str_pad($next, 3, '0', STR_PAD_LEFT);
+            $next++;
+        } while (User::where('user_id', $code)->exists());
+
+        return $code;
     }
 }
